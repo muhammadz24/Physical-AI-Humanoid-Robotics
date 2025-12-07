@@ -36,7 +36,6 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          routeBasePath: '/',
           // Breadcrumb navigation (FR-010)
           breadcrumbs: true,
         },
@@ -123,10 +122,6 @@ const config = {
     }),
 
   // Code block features (FR-003): line numbers, copy button
-  markdown: {
-    mermaid: true,
-  },
-  themes: ['@docusaurus/theme-mermaid'],
 };
 
 module.exports = config;
