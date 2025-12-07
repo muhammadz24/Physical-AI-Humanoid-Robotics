@@ -12,13 +12,15 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://YOUR_GITHUB_USERNAME.github.io',
+  url: 'https://muhammadz24.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   baseUrl: '/Physical-AI-Humanoid-Robotics/',
 
   // GitHub pages deployment config.
-  organizationName: 'YOUR_GITHUB_USERNAME',
+  organizationName: 'muhammadz24',
   projectName: 'Physical-AI-Humanoid-Robotics',
+  deploymentBranch: 'gh-pages',
+  trailingSlash: false,
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -67,7 +69,7 @@ const config = {
             label: 'Textbook',
           },
           {
-            href: 'https://github.com/YOUR_GITHUB_USERNAME/Physical-AI-Humanoid-Robotics',
+            href: 'https://github.com/muhammadz24/Physical-AI-Humanoid-Robotics',
             label: 'GitHub',
             position: 'right',
           },
