@@ -1,55 +1,278 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Physical AI & Humanoid Robotics — Essentials Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Simplicity-First Design
+**The textbook and platform must prioritize clarity and ease of understanding above all else.**
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+- Content written for learners with minimal robotics background
+- UI must be clean, intuitive, and distraction-free
+- Features introduced only when they serve clear pedagogical value
+- No feature bloat: every component must justify its existence
+- Code examples must be minimal, executable, and well-commented
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Accuracy & Source Fidelity
+**Every piece of information must be technically accurate and traceable to authoritative sources.**
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+- All technical content verified against official documentation (ROS 2, Gazebo, Isaac Sim, etc.)
+- RAG chatbot answers MUST be grounded exclusively in textbook content
+- No hallucinations or external knowledge injection in chatbot responses
+- Citations and references included where appropriate
+- Regular technical review cycles for content validation
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### III. Free-Tier Architecture (NON-NEGOTIABLE)
+**The entire platform must operate within free-tier constraints of all services.**
 
-### [PRINCIPLE_6_NAME]
+- Qdrant Cloud: Free tier vector storage limits respected
+- Neon Postgres: Free tier database limits respected
+- Vercel/GitHub Pages: Free hosting constraints adhered to
+- No paid API dependencies (OpenAI, etc.) for core functionality
+- Lightweight embeddings: minimize storage and compute costs
+- Efficient chunking and retrieval strategies to stay within limits
 
+### IV. Docusaurus Best Practices Compliance (NON-NEGOTIABLE)
+**All UI/UX patterns must strictly follow official Docusaurus documentation.**
 
-[PRINCIPLE__DESCRIPTION]
+Authoritative Source:
+- **Official Docs**: https://docusaurus.io/docs
+- All frontend implementation decisions verified against official documentation
+- Use Docusaurus built-in features before custom solutions
+- Follow recommended project structure, configuration, and plugin patterns
+- Leverage Docusaurus theming system (no custom CSS frameworks)
+- Adhere to MDX best practices for content authoring
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+Core Docusaurus Features to Utilize:
+- Docs versioning (if multi-version support needed)
+- Built-in search (Algolia DocSearch or local search)
+- Dark mode (built-in theme toggle)
+- Sidebar navigation (auto-generated from file structure)
+- Code block features (syntax highlighting, line numbers, copy button)
+- Admonitions (:::note, :::tip, :::warning, :::danger)
+- Tabs and interactive elements (built-in components)
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### V. Minimalism in Technology Stack
+**Use the smallest viable set of technologies; avoid over-engineering.**
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Required Stack:
+- **Frontend**: Docusaurus v3.x (static site generation, official best practices)
+- **Backend**: FastAPI (lightweight Python API)
+- **Vector DB**: Qdrant Cloud (free tier)
+- **Database**: Neon Postgres (free tier)
+- **Embeddings**: Sentence Transformers (local, open-source, all-MiniLM-L6-v2)
+- **Deployment**: GitHub Pages or Vercel (free tier)
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+Forbidden:
+- Heavy frameworks requiring significant build times
+- Paid APIs or services
+- GPU-dependent operations in production
+- Complex microservices architectures
+- Unnecessary abstraction layers
+- Custom CSS frameworks (use Docusaurus theming)
+
+### VI. Fast Build & Iteration Cycles
+**Development, build, and deployment processes must be optimized for speed.**
+
+- Docusaurus builds complete in under 60 seconds
+- Local development server starts in under 10 seconds
+- RAG indexing pipeline completes in under 5 minutes for full textbook
+- CI/CD pipeline (if implemented) completes in under 10 minutes
+- Hot-reload during development for instant feedback
+
+### VII. Content-First Development
+**Content quality and pedagogical value drive all technical decisions.**
+
+- 6 chapters finalized before advanced features
+- Each chapter must include:
+  - Clear learning objectives
+  - Conceptual explanations with diagrams
+  - Hands-on code examples
+  - Self-assessment questions
+  - Further reading resources
+- Content review precedes UI/UX enhancements
+- Chatbot quality measured by answer accuracy, not feature count
+
+### VIII. RAG Chatbot Guardrails
+**The RAG chatbot must be helpful, accurate, and scope-limited.**
+
+Core Requirements:
+- Answers derived ONLY from textbook content chunks
+- Clear indication when query is outside textbook scope
+- Contextual retrieval (top-k relevant chunks with semantic search)
+- Fallback message when confidence is low
+- Optional features (Urdu translation, personalization) do not compromise accuracy
+
+Quality Metrics:
+- Answer relevance: >90% based on retrieval precision
+- Response time: <3 seconds for query → answer
+- No hallucinations: verifiable against source text
+
+## Content Standards
+
+### Chapter Structure Requirements
+Each of the 6 chapters must follow this template:
+
+1. **Introduction** (200-300 words)
+   - Chapter objectives
+   - Real-world relevance
+   - Prerequisites
+
+2. **Conceptual Foundation** (800-1200 words)
+   - Core concepts explained simply
+   - Analogies and visual aids
+   - Historical context where relevant
+
+3. **Technical Details** (1000-1500 words)
+   - Technical specifications
+   - Architecture diagrams
+   - System interactions
+
+4. **Hands-On Examples** (500-800 words)
+   - Executable code snippets
+   - Step-by-step walkthroughs
+   - Common pitfalls and solutions
+
+5. **Self-Assessment** (5-10 questions)
+   - Multiple choice or short answer
+   - Answers provided separately
+
+6. **Further Resources**
+   - Official documentation links
+   - Recommended tutorials
+   - Community resources
+
+### Code Quality Standards
+All code examples must:
+- Run successfully on standard Ubuntu 22.04 / ROS 2 Humble setup
+- Include inline comments explaining key concepts
+- Follow PEP 8 (Python) or ROS 2 style guidelines
+- Be self-contained or clearly document dependencies
+- Include expected output or behavior description
+
+## Performance Standards
+
+### Frontend Performance
+- Lighthouse Performance Score: >90
+- First Contentful Paint: <1.5s
+- Time to Interactive: <3.5s
+- Cumulative Layout Shift: <0.1
+- Lazy-loading for images and heavy components
+
+### Backend Performance
+- RAG query processing: <2s (p95)
+- Vector search retrieval: <500ms (p95)
+- Embedding generation (if on-demand): <1s per chunk
+- API endpoint response times: <1s (p95)
+
+### Database Efficiency
+- Vector embeddings: max 384 dimensions (sentence-transformers/all-MiniLM-L6-v2)
+- Chunk size: 300-500 tokens optimal for retrieval
+- Total chunks for 6 chapters: <1000 estimated
+- Metadata storage: minimal (chapter ID, section, page reference)
+
+## Security & Privacy
+
+### Data Handling
+- No user authentication required for basic textbook access
+- Optional chatbot usage tracking: anonymous, aggregated only
+- No PII collection without explicit consent
+- API rate limiting to prevent abuse (if public)
+- CORS policies properly configured
+
+### Dependency Security
+- Regular `npm audit` and `pip check` for vulnerabilities
+- Minimal third-party dependencies
+- Pin dependency versions in lock files
+- Automated security scanning in CI/CD (if implemented)
+
+## Deployment & Operations
+
+### Deployment Workflow
+1. Content updates merged to `main` branch
+2. Automated build triggered (GitHub Actions or Vercel)
+3. Static site generated and deployed to GitHub Pages/Vercel
+4. RAG re-indexing triggered if content changed
+5. Smoke tests verify chatbot functionality
+
+### Monitoring & Observability
+- GitHub Pages/Vercel analytics for traffic
+- Basic API logging (request count, latency, errors)
+- Error tracking for chatbot failures
+- No complex APM tools (stay within free tier)
+
+### Rollback Strategy
+- Git-based rollback for content issues
+- Previous deployment artifacts retained
+- Database migrations (if any) must be reversible
+
+## Feature Roadmap Prioritization
+
+### Phase 1: Core MVP (Must-Have)
+1. Docusaurus textbook with 6 chapters
+2. Basic RAG chatbot integration
+3. Clean, responsive UI
+4. GitHub Pages deployment
+
+### Phase 2: Enhanced UX (Nice-to-Have)
+1. Select-text → Ask AI functionality
+2. Chapter progress tracking (localStorage)
+3. Dark mode toggle
+4. Search functionality (Docusaurus built-in)
+
+### Phase 3: Advanced Features (Optional)
+1. Urdu translation toggle
+2. Personalized learning paths
+3. Interactive code playgrounds (if feasible in free tier)
+4. Community Q&A integration
+
+**Constraint**: Phase 2 features only after Phase 1 is fully validated. Phase 3 only if free-tier budget allows.
+
+## Quality Gates
+
+### Before Content Merge
+- [ ] Technical accuracy verified by subject matter expert
+- [ ] Code examples tested and executable
+- [ ] Markdown formatting validated
+- [ ] No broken links or missing images
+- [ ] Passes spell-check and grammar review
+
+### Before Feature Deployment
+- [ ] Builds successfully in clean environment
+- [ ] Chatbot answers verified against 10+ test queries
+- [ ] Lighthouse performance score >90
+- [ ] Mobile responsiveness tested
+- [ ] Free-tier resource limits checked
+
+### Before Production Release
+- [ ] All 6 chapters complete and reviewed
+- [ ] RAG chatbot accuracy >90% on sample queries
+- [ ] Deployment pipeline tested end-to-end
+- [ ] Documentation for contributors complete
+- [ ] License and attribution files in place
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+### Constitution Authority
+- This constitution supersedes all ad-hoc technical decisions
+- All code, content, and architectural changes must align with these principles
+- Deviations require documented justification and approval
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+### Amendment Process
+1. Proposed change documented with rationale
+2. Impact assessment on existing content/features
+3. Approval from project lead required
+4. Migration plan for affected components
+5. Version increment and changelog update
+
+### Compliance Verification
+- All pull requests reviewed for constitutional compliance
+- Regular audits of free-tier resource usage
+- Content quality reviews quarterly
+- Technical debt tracked and addressed proactively
+
+### Living Document
+- This constitution evolves with the project
+- Learnings from user feedback incorporated
+- Performance benchmarks adjusted based on real-world data
+- Simplicity principle never compromised
+
+**Version**: 1.1.0 | **Ratified**: 2025-12-06 | **Last Amended**: 2025-12-06
