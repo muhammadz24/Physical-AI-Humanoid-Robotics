@@ -1,0 +1,47 @@
+---
+sidebar_position: 1
+title: Chapter 1 - Introduction to Physical AI
+---
+
+# Chapter 1: Introduction to Physical AI
+
+## Chapter Overview
+
+Welcome to the world of Physical AI! This chapter introduces you to the exciting field where artificial intelligence meets the physical world through robotics, autonomous systems, and embodied intelligence.
+
+**Learning Objectives:**
+- Understand what Physical AI is and why it matters
+- Learn about the historical evolution of AI in physical systems
+- Explore real-world applications transforming industries
+- Grasp the key challenges and opportunities in this field
+
+**Prerequisites:**
+- Basic understanding of artificial intelligence concepts
+- Familiarity with programming fundamentals (Python recommended)
+- Curiosity about robotics and physical systems
+
+**Estimated Reading Time:** 25-30 minutes
+
+---
+
+## What You'll Learn
+
+In this chapter, you will:
+
+1. **Understand Physical AI** - Discover how AI extends beyond software to interact with the physical world
+2. **Trace the History** - Learn how Physical AI evolved from early automation to modern intelligent robots
+3. **Explore Applications** - See how Physical AI is revolutionizing manufacturing, healthcare, and autonomous systems
+4. **Assess Your Knowledge** - Test your understanding with self-assessment questions
+
+---
+
+## Chapter Sections
+
+1. [What is Physical AI?](./what-is-physical-ai) - Core concepts and definitions
+2. [History of Physical AI](./history) - Evolution from automation to intelligence
+3. [Applications of Physical AI](./applications) - Real-world use cases and impact
+4. [Self-Assessment](./self-assessment) - Test your understanding
+
+---
+
+**Ready to dive in?** Let's start with [What is Physical AI?](./what-is-physical-ai)

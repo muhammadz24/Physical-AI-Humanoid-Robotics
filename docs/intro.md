@@ -41,7 +41,7 @@ To get the most out of this textbook, you should have:
 
 ## Get Started
 
-Ready to begin? Chapter 1: Introduction to Physical AI is coming soon!
+Ready to begin? Head to [Chapter 1: Introduction to Physical AI](/chapter-01/) to start your learning journey!
 
 ---
 

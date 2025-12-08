@@ -1,0 +1,29 @@
+================================
+GITHUB REPOSITORY SETUP
+================================
+
+Step 1: Create Repository on GitHub
+------------------------------------
+1. Go to: https://github.com/new
+2. Repository name: Physical-AI-Humanoid-Robotics
+3. Description: AI-Native Interactive Textbook for Physical AI and Humanoid Robotics with RAG Chatbot
+4. Visibility: PUBLIC (required for free GitHub Pages)
+5. DO NOT initialize with README, .gitignore, or license
+6. Click "Create repository"
+
+Step 2: Push Your Code (Run these commands)
+-------------------------------------------
+git remote add origin https://github.com/muhammadz24/Physical-AI-Humanoid-Robotics.git
+git push -u origin main
+
+Step 3: Enable GitHub Pages
+---------------------------
+1. Go to: https://github.com/muhammadz24/Physical-AI-Humanoid-Robotics/settings/pages
+2. Under "Build and deployment":
+   - Source: GitHub Actions
+3. Wait ~2 minutes for deployment
+
+Your site will be live at:
+https://muhammadz24.github.io/Physical-AI-Humanoid-Robotics/
+
+================================

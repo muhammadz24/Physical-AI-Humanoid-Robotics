@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Head -->
+  <rect x="35" y="15" width="30" height="25" rx="3" fill="#4A90E2" stroke="#2C5AA0" stroke-width="2"/>
+  <!-- Eyes -->
+  <circle cx="42" cy="25" r="3" fill="#FFFFFF"/>
+  <circle cx="58" cy="25" r="3" fill="#FFFFFF"/>
+  <!-- Antenna -->
+  <line x1="50" y1="15" x2="50" y2="8" stroke="#2C5AA0" stroke-width="2"/>
+  <circle cx="50" cy="8" r="2" fill="#E74C3C"/>
+
+  <!-- Body -->
+  <rect x="30" y="45" width="40" height="35" rx="3" fill="#4A90E2" stroke="#2C5AA0" stroke-width="2"/>
+  <!-- Chest detail -->
+  <rect x="45" y="52" width="10" height="8" rx="1" fill="#2C5AA0"/>
+  <circle cx="50" cy="56" r="2" fill="#E74C3C"/>
+
+  <!-- Arms -->
+  <rect x="18" y="48" width="8" height="25" rx="2" fill="#4A90E2" stroke="#2C5AA0" stroke-width="2"/>
+  <rect x="74" y="48" width="8" height="25" rx="2" fill="#4A90E2" stroke="#2C5AA0" stroke-width="2"/>
+  <!-- Hands -->
+  <circle cx="22" cy="75" r="4" fill="#4A90E2" stroke="#2C5AA0" stroke-width="2"/>
+  <circle cx="78" cy="75" r="4" fill="#4A90E2" stroke="#2C5AA0" stroke-width="2"/>
+
+  <!-- Legs -->
+  <rect x="35" y="82" width="10" height="15" rx="2" fill="#4A90E2" stroke="#2C5AA0" stroke-width="2"/>
+  <rect x="55" y="82" width="10" height="15" rx="2" fill="#4A90E2" stroke="#2C5AA0" stroke-width="2"/>
+  <!-- Feet -->
+  <ellipse cx="40" cy="97" rx="6" ry="2" fill="#2C5AA0"/>
+  <ellipse cx="60" cy="97" rx="6" ry="2" fill="#2C5AA0"/>
+</svg>
