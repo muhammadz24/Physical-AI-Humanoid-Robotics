@@ -1,49 +1,377 @@
 /**
  * Custom CSS for Physical AI & Humanoid Robotics Textbook
- * Theme: Dark Cybernetic Purple - Modern, AI/Robotics-focused
+ * Theme: Cyber-Professional Dark Mode - High-tech, sleek, and futuristic
  * Follows Docusaurus theming best practices (Constitution Principle IV)
  */
 
+/* ============================================
+   CYBER-PROFESSIONAL DARK MODE THEME
+   ============================================ */
+
 :root {
-  /* Light Mode - Deep Purple */
-  --ifm-color-primary: #6B46C1;
-  --ifm-color-primary-dark: #5B3AA8;
-  --ifm-color-primary-darker: #52349B;
-  --ifm-color-primary-darkest: #42297D;
-  --ifm-color-primary-light: #7C56D1;
-  --ifm-color-primary-lighter: #8D67DA;
-  --ifm-color-primary-lightest: #9E78E3;
+  /* Light Mode - Professional with midnight blue accents */
+  --ifm-color-primary: #0a192f;
+  --ifm-color-primary-dark: #08141f;
+  --ifm-color-primary-darker: #06101a;
+  --ifm-color-primary-darkest: #040a11;
+  --ifm-color-primary-light: #0c1e3f;
+  --ifm-color-primary-lighter: #0e2349;
+  --ifm-color-primary-lightest: #102853;
+
+  /* Silver/Metallic accents */
+  --ifm-color-secondary: #C0C0C0;
+  --ifm-color-success: #00D9FF;
+  --ifm-color-info: #5B9BD5;
+  --ifm-color-warning: #FFB627;
+  --ifm-color-danger: #FF4757;
+
+  /* Backgrounds */
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f8f9fa;
+
+  /* Code blocks */
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(107, 70, 193, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(10, 25, 47, 0.1);
+
+  /* Fonts */
+  --ifm-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --ifm-font-family-monospace: 'Fira Code', 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+
+  /* Spacing */
+  --ifm-spacing-horizontal: 1.5rem;
+  --ifm-navbar-height: 4rem;
 }
 
-/* Dark Mode - Vibrant Purple */
+/* Dark Mode - Cyber aesthetic with deep blacks and electric blues */
 [data-theme='dark'] {
-  --ifm-color-primary: #A78BFA;
-  --ifm-color-primary-dark: #9775FA;
-  --ifm-color-primary-darker: #8B5CF6;
-  --ifm-color-primary-darkest: #7C3AED;
-  --ifm-color-primary-light: #B197FC;
-  --ifm-color-primary-lighter: #C4B5FD;
-  --ifm-color-primary-lightest: #DDD6FE;
-  --docusaurus-highlighted-code-line-bg: rgba(167, 139, 250, 0.2);
+  /* Primary colors - Deep black and midnight blue */
+  --ifm-color-primary: #00D9FF;
+  --ifm-color-primary-dark: #00C3E6;
+  --ifm-color-primary-darker: #00B8D9;
+  --ifm-color-primary-darkest: #0097B3;
+  --ifm-color-primary-light: #1ADDFF;
+  --ifm-color-primary-lighter: #33E1FF;
+  --ifm-color-primary-lightest: #66E9FF;
+
+  /* Backgrounds - Deep black with subtle blue tints */
+  --ifm-background-color: #000000;
+  --ifm-background-surface-color: #0a0a0a;
+  --ifm-navbar-background-color: rgba(10, 25, 47, 0.7);
+
+  /* Text colors */
+  --ifm-font-color-base: #E8E8E8;
+  --ifm-font-color-secondary: #C0C0C0;
+
+  /* Code blocks - Matrix/terminal aesthetic */
+  --docusaurus-highlighted-code-line-bg: rgba(0, 217, 255, 0.15);
+  --ifm-code-background: #0f0f0f;
+
+  /* Links - Electric blue */
+  --ifm-link-color: #00D9FF;
+  --ifm-link-hover-color: #66E9FF;
+
+  /* Sidebar */
+  --ifm-menu-color: #C0C0C0;
+  --ifm-menu-color-active: #00D9FF;
+  --ifm-menu-color-background-active: rgba(0, 217, 255, 0.1);
+
+  /* Cards and surfaces */
+  --ifm-card-background-color: rgba(15, 15, 15, 0.8);
+}
+
+/* ============================================
+   GLASSMORPHISM EFFECTS
+   ============================================ */
+
+/* Navbar glassmorphism */
+.navbar {
+  background: var(--ifm-navbar-background-color, rgba(255, 255, 255, 0.7)) !important;
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  border-bottom: 1px solid rgba(192, 192, 192, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] .navbar {
+  background: rgba(10, 25, 47, 0.7) !important;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 217, 255, 0.1);
+}
+
+/* Sidebar glassmorphism */
+.theme-doc-sidebar-container {
+  background: rgba(248, 249, 250, 0.8) !important;
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  border-right: 1px solid rgba(192, 192, 192, 0.2);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-container {
+  background: rgba(10, 10, 10, 0.8) !important;
+  border-right: 1px solid rgba(0, 217, 255, 0.2);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+/* Fade-in animation for page content */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+article {
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slide-in animation for sidebar */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.theme-doc-sidebar-container {
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth hover effects for links */
+a {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+a:hover {
+  transform: translateX(2px);
+}
+
+/* Button hover effects */
+.button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.button:hover::before {
+  left: 100%;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 217, 255, 0.3);
+}
+
+/* Navbar item hover effects */
+.navbar__item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar__link:hover {
+  color: var(--ifm-color-primary) !important;
+}
+
+[data-theme='dark'] .navbar__link:hover {
+  color: var(--ifm-color-primary-lighter) !important;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+/* Sidebar item hover effects */
+.menu__link {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 6px;
+}
+
+.menu__link:hover {
+  background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1));
+}
+
+[data-theme='dark'] .menu__link:hover {
+  background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.15));
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
 }
 
 /* Code block styling (FR-003) */
 code {
   border-radius: 4px;
   padding: 0.15rem 0.4rem;
+  background: var(--ifm-code-background);
+  border: 1px solid rgba(192, 192, 192, 0.2);
+  font-family: var(--ifm-font-family-monospace);
 }
 
-/* Ensure copy button is visible (FR-003, T051) */
+[data-theme='dark'] code {
+  background: rgba(15, 15, 15, 0.9);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  box-shadow: 0 0 5px rgba(0, 217, 255, 0.1);
+}
+
+/* Code block container with glow effect */
 .theme-code-block {
   position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] .theme-code-block {
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 217, 255, 0.1);
+}
+
+.theme-code-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='dark'] .theme-code-block:hover {
+  box-shadow: 0 8px 12px rgba(0, 217, 255, 0.2);
 }
 
 /* Responsive images (FR-029) */
 img {
   max-width: 100%;
   height: auto;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='dark'] img:hover {
+  box-shadow: 0 8px 16px rgba(0, 217, 255, 0.3);
+}
+
+/* Hero section enhancements */
+.hero {
+  background: linear-gradient(135deg, #0a192f 0%, #000000 100%);
+  border-bottom: 2px solid rgba(0, 217, 255, 0.3);
+}
+
+[data-theme='dark'] .hero {
+  background: linear-gradient(135deg, #000000 0%, #0a192f 100%);
+  border-bottom: 2px solid rgba(0, 217, 255, 0.5);
+}
+
+.hero__title {
+  font-weight: 700;
+  font-size: 3.5rem;
+  background: linear-gradient(135deg, #00D9FF, #66E9FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero__subtitle {
+  color: #C0C0C0;
+  font-size: 1.5rem;
+  animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+/* Cards and panels */
+.card {
+  background: var(--ifm-card-background-color);
+  border-radius: 12px;
+  border: 1px solid rgba(192, 192, 192, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] .card {
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.05);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='dark'] .card:hover {
+  box-shadow: 0 12px 24px rgba(0, 217, 255, 0.2);
+}
+
+/* Scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(0, 217, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Scrollbar styling for dark mode */
+[data-theme='dark'] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 217, 255, 0.3);
+  border-radius: 5px;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 217, 255, 0.5);
+}
+
+/* Footer styling */
+.footer {
+  background: var(--ifm-background-surface-color);
+  border-top: 1px solid rgba(192, 192, 192, 0.2);
+}
+
+[data-theme='dark'] .footer {
+  background: rgba(10, 10, 10, 0.8);
+  border-top: 1px solid rgba(0, 217, 255, 0.2);
+}
+
+/* GitHub Author Component */
+.github-author {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+[data-theme='dark'] .github-author {
+  background: rgba(0, 217, 255, 0.1) !important;
+  border: 1px solid rgba(0, 217, 255, 0.2);
+}
+
+.github-author:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 217, 255, 0.2);
 }
 
 /* Chatbot widget placeholder (will be styled when implemented in US2) */
@@ -52,4 +380,5 @@ img {
   bottom: 20px;
   right: 20px;
   z-index: 1000;
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }

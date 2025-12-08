@@ -29,11 +29,13 @@
 - [ ] T002 Initialize Node.js project with Docusaurus v3.x dependencies in package.json
 - [ ] T003 [P] Initialize Python project with FastAPI dependencies in backend/requirements.txt
 - [ ] T004 [P] Create Docusaurus configuration in docusaurus.config.js
-- [ ] T005 [P] Create sidebar configuration in sidebars.js (auto-generated mode)
-- [ ] T006 [P] Setup .gitignore for Node and Python projects
+- [x] T005 [P] Create sidebar configuration in sidebars.js (manual categories for chapters, Welcome first, no duplicates)
+- [x] T006 [P] Setup .gitignore for Node and Python projects
 - [ ] T007 [P] Create backend/.env.example with Qdrant, Neon, and API configuration templates
-- [ ] T008 [P] Setup custom CSS in src/css/custom.css for Docusaurus theme customizations
-- [ ] T009 [P] Add logo and favicon to static/img/
+- [x] T008 [P] Setup custom CSS in src/css/custom.css (Cyber-Professional Dark Mode theme with glassmorphism and animations)
+- [x] T009 [P] Add logo and favicon to static/img/
+- [x] T009a [BONUS] Create GitHub Author component in src/components/GitHubAuthor.js with useEffect API integration
+- [x] T009b [BONUS] Swizzle Navbar component in src/theme/Navbar/index.js for dynamic author display
 
 ---
 
