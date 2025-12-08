@@ -9,7 +9,7 @@ const darkTheme = themes.dracula;
 const config = {
   title: 'Physical AI & Humanoid Robotics',
   tagline: 'Learn Physical AI, ROS 2, and Humanoid Robotics from Fundamentals to Advanced',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/logo.svg',
 
   // Set the production url of your site here
   url: 'https://muhammadz24.github.io',

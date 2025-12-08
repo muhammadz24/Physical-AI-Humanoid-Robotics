@@ -27,10 +27,22 @@ yarn-error.log*
 *.swp
 *.swo
 *~
+*.code-workspace
+.history/
 
-# OS
+# OS - macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# OS - Windows
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
 
 # Python
 __pycache__/
@@ -49,3 +61,13 @@ ENV/
 *.tmp
 *.temp
 .cache/
+nul
+
+# Test coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Misc
+*.bak
+*.backup
