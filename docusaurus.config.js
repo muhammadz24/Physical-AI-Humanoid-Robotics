@@ -73,6 +73,12 @@ const config = {
             label: 'GitHub',
             position: 'right',
           },
+          {
+            to: '/author',
+            label: 'Book Author',
+            position: 'right',
+            className: 'navbar-author-link',
+          },
         ],
       },
 
