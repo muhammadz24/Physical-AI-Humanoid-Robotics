@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '@theme/Layout';
+import PageLoader from '../components/PageLoader';
 
 /**
  * Book Author Page - Cyber-Professional Dark Mode
@@ -7,6 +8,7 @@ import Layout from '@theme/Layout';
  * Features: Glassmorphism, Fade-in/Slide-up animations, Cyber aesthetics
  */
 export default function AuthorPage() {
+  const [minWait, setMinWait] = useState(true);
   const [author, setAuthor] = useState({
     name: null,
     login: null,
@@ -21,6 +23,14 @@ export default function AuthorPage() {
     loading: true,
     error: false,
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinWait(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const fetchGitHubUser = async () => {
@@ -64,6 +74,10 @@ export default function AuthorPage() {
     fetchGitHubUser();
   }, []);
 
+  if (minWait || author.loading) {
+    return <PageLoader />;
+  }
+
   return (
     <Layout
       title="Book Author"
@@ -71,17 +85,6 @@ export default function AuthorPage() {
 
       {/* Animation Keyframes */}
       <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(40px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
         @keyframes pulse {
           0%, 100% {
             box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
@@ -89,10 +92,6 @@ export default function AuthorPage() {
           50% {
             box-shadow: 0 0 40px rgba(0, 217, 255, 0.6);
           }
-        }
-
-        .author-container {
-          animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .author-avatar {
@@ -116,17 +115,7 @@ export default function AuthorPage() {
       }}>
 
         {/* Loading State */}
-        {author.loading && (
-          <div style={{
-            fontSize: '1.5rem',
-            color: '#00D9FF',
-            fontWeight: '300',
-            letterSpacing: '2px',
-            animation: 'fadeInUp 0.8s ease-out',
-          }}>
-            Establishing Neural Uplink...
-          </div>
-        )}
+        {author.loading && <PageLoader />}
 
         {/* Error State */}
         {author.error && !author.loading && (

@@ -69,11 +69,6 @@ const config = {
             label: 'Textbook',
           },
           {
-            href: 'https://github.com/muhammadz24/Physical-AI-Humanoid-Robotics',
-            label: 'GitHub',
-            position: 'right',
-          },
-          {
             to: '/author',
             label: 'Book Author',
             position: 'right',
