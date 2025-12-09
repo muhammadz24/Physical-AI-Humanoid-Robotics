@@ -3,23 +3,28 @@ import Navbar from '@theme-original/Navbar';
 import GitHubAuthor from '@site/src/components/GitHubAuthor';
 
 /**
- * Swizzled Navbar Component
+ * Swizzled Navbar Component - COMPLETE IMPLEMENTATION
  * Extends default Docusaurus Navbar with GitHub Author integration
- * Follows Docusaurus best practices: swizzle pattern for customization
+ * Properly positions author on the right side using Flexbox
+ * Follows Docusaurus best practices: swizzle wrapper pattern
  */
 export default function NavbarWrapper(props) {
   return (
-    <>
-      <Navbar {...props}>
-        <div style={{
+    <div style={{ position: 'relative' }}>
+      <Navbar {...props} />
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          right: '80px',
+          transform: 'translateY(-50%)',
+          zIndex: 1,
           display: 'flex',
           alignItems: 'center',
-          marginLeft: 'auto',
-          marginRight: '16px',
-        }}>
-          <GitHubAuthor />
-        </div>
-      </Navbar>
-    </>
+        }}
+      >
+        <GitHubAuthor />
+      </div>
+    </div>
   );
 }

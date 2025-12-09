@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
 
 /**
- * GitHubAuthor Component
+ * GitHubAuthor Component - COMPLETE IMPLEMENTATION
  * Fetches and displays author information from GitHub API
- * Implements functional requirement: Dynamic Navbar with GitHub API integration
- * Uses useEffect for efficient data fetching (as per constraints)
+ * Uses useEffect for efficient data fetching per constraints
+ * Cyber-Professional Dark Mode styling with clickable link
  */
 export default function GitHubAuthor() {
   const [author, setAuthor] = useState({
-    name: 'Muhammad Zeeshan', // Fallback static text
+    name: null,
+    login: 'muhammadz24',
     avatar_url: null,
+    html_url: 'https://github.com/muhammadz24',
     loading: true,
     error: false,
   });
 
   useEffect(() => {
-    // Fetch GitHub user data
     const fetchGitHubUser = async () => {
       try {
         const response = await fetch('https://api.github.com/users/muhammadz24', {
@@ -25,20 +26,21 @@ export default function GitHubAuthor() {
         });
 
         if (!response.ok) {
-          throw new Error('GitHub API request failed');
+          throw new Error(`GitHub API error: ${response.status}`);
         }
 
         const data = await response.json();
 
         setAuthor({
-          name: data.name || 'Muhammad Zeeshan',
+          name: data.name || data.login,
+          login: data.login,
           avatar_url: data.avatar_url,
+          html_url: data.html_url,
           loading: false,
           error: false,
         });
       } catch (error) {
         console.error('Failed to fetch GitHub user data:', error);
-        // Fallback to static text on API failure
         setAuthor(prev => ({
           ...prev,
           loading: false,
@@ -48,53 +50,72 @@ export default function GitHubAuthor() {
     };
 
     fetchGitHubUser();
-  }, []); // Empty dependency array - fetch once on mount
+  }, []);
 
+  // If loading, show minimal loading state
   if (author.loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ fontSize: '14px', color: 'var(--ifm-navbar-link-color)' }}>
-          Loading...
-        </span>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '6px 12px',
+        fontSize: '13px',
+        color: 'var(--ifm-navbar-link-color)',
+      }}>
+        <span>Loading...</span>
       </div>
     );
   }
 
+  // If error, return null (minimal fallback)
+  if (author.error && !author.avatar_url) {
+    return null;
+  }
+
+  // Main render: Clickable link with avatar and name
   return (
-    <div
+    <a
+      href={author.html_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="github-author"
       style={{
         display: 'flex',
         alignItems: 'center',
         gap: '10px',
-        padding: '4px 12px',
-        borderRadius: '20px',
+        padding: '6px 14px',
+        borderRadius: '24px',
+        textDecoration: 'none',
         background: 'var(--ifm-navbar-background-color, rgba(0, 0, 0, 0.05))',
-        transition: 'all 0.3s ease',
+        border: '1px solid rgba(192, 192, 192, 0.2)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        cursor: 'pointer',
       }}
-      className="github-author"
     >
-      {author.avatar_url && !author.error && (
+      {author.avatar_url && (
         <img
           src={author.avatar_url}
-          alt={author.name}
+          alt={author.name || author.login}
           style={{
             width: '32px',
             height: '32px',
             borderRadius: '50%',
-            border: '2px solid var(--ifm-color-primary)',
+            border: '2px solid var(--ifm-color-primary, #00D9FF)',
             objectFit: 'cover',
+            transition: 'all 0.3s ease',
           }}
         />
       )}
       <span
         style={{
           fontSize: '14px',
-          fontWeight: '500',
+          fontWeight: '600',
           color: 'var(--ifm-navbar-link-color)',
+          whiteSpace: 'nowrap',
         }}
       >
-        {author.name}
+        {author.name || author.login}
       </span>
-    </div>
+    </a>
   );
 }
