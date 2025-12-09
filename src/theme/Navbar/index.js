@@ -3,28 +3,41 @@ import Navbar from '@theme-original/Navbar';
 import GitHubAuthor from '@site/src/components/GitHubAuthor';
 
 /**
- * Swizzled Navbar Component - COMPLETE IMPLEMENTATION
- * Extends default Docusaurus Navbar with GitHub Author integration
- * Properly positions author on the right side using Flexbox
- * Follows Docusaurus best practices: swizzle wrapper pattern
+ * Swizzled Navbar Component - LAYOUT STABILITY FIX
+ * Renders original Navbar untouched to preserve sticky behavior
+ * GitHubAuthor uses position: fixed to float independently
+ * No wrapper interference with Docusaurus layout
  */
 export default function NavbarWrapper(props) {
   return (
-    <div style={{ position: 'relative' }}>
+    <>
+      {/* Original Navbar - NO WRAPPER to preserve sticky behavior */}
       <Navbar {...props} />
+
+      {/* GitHub Author - FIXED positioning, independent of navbar */}
       <div
         style={{
-          position: 'absolute',
-          top: '50%',
-          right: '80px',
-          transform: 'translateY(-50%)',
-          zIndex: 1,
-          display: 'flex',
-          alignItems: 'center',
+          position: 'fixed',
+          top: '0.7rem',
+          right: '5rem',
+          zIndex: 200,
+          pointerEvents: 'none', // Allow clicks to pass through container
         }}
       >
-        <GitHubAuthor />
+        <div style={{ pointerEvents: 'auto' }}>
+          {/* Re-enable pointer events for actual component */}
+          <GitHubAuthor />
+        </div>
       </div>
-    </div>
+
+      {/* Mobile: Hide on small screens to prevent clutter */}
+      <style>{`
+        @media (max-width: 768px) {
+          .github-author {
+            display: none !important;
+          }
+        }
+      `}</style>
+    </>
   );
 }

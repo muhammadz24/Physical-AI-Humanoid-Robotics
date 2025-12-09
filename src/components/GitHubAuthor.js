@@ -9,9 +9,9 @@ import React, { useEffect, useState } from 'react';
 export default function GitHubAuthor() {
   const [author, setAuthor] = useState({
     name: null,
-    login: 'muhammadz24',
+    login: null,
     avatar_url: null,
-    html_url: 'https://github.com/muhammadz24',
+    html_url: null,
     loading: true,
     error: false,
   });
@@ -25,6 +25,7 @@ export default function GitHubAuthor() {
           },
         });
 
+        // VALIDATION: Check if response.ok
         if (!response.ok) {
           throw new Error(`GitHub API error: ${response.status}`);
         }
@@ -41,6 +42,7 @@ export default function GitHubAuthor() {
         });
       } catch (error) {
         console.error('Failed to fetch GitHub user data:', error);
+        // Set error state - will return null below
         setAuthor(prev => ({
           ...prev,
           loading: false,
@@ -50,9 +52,9 @@ export default function GitHubAuthor() {
     };
 
     fetchGitHubUser();
-  }, []);
+  }, []); // Empty dependency array - fetch once on mount
 
-  // If loading, show minimal loading state
+  // Loading state - show minimal indicator
   if (author.loading) {
     return (
       <div style={{
@@ -67,12 +69,12 @@ export default function GitHubAuthor() {
     );
   }
 
-  // If error, return null (minimal fallback)
-  if (author.error && !author.avatar_url) {
+  // ERROR FALLBACK: Return null if API fails (do not render broken text)
+  if (author.error || !author.avatar_url || !author.html_url) {
     return null;
   }
 
-  // Main render: Clickable link with avatar and name
+  // MAIN RENDER: Clickable <a> tag linking to GitHub profile
   return (
     <a
       href={author.html_url}
@@ -86,31 +88,33 @@ export default function GitHubAuthor() {
         padding: '6px 14px',
         borderRadius: '24px',
         textDecoration: 'none',
-        background: 'var(--ifm-navbar-background-color, rgba(0, 0, 0, 0.05))',
-        border: '1px solid rgba(192, 192, 192, 0.2)',
+        background: 'rgba(10, 25, 47, 0.6)',
+        border: '1px solid rgba(0, 217, 255, 0.3)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         cursor: 'pointer',
       }}
     >
-      {author.avatar_url && (
-        <img
-          src={author.avatar_url}
-          alt={author.name || author.login}
-          style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '50%',
-            border: '2px solid var(--ifm-color-primary, #00D9FF)',
-            objectFit: 'cover',
-            transition: 'all 0.3s ease',
-          }}
-        />
-      )}
+      {/* AVATAR: 32px Circular image with Cyan border */}
+      <img
+        src={author.avatar_url}
+        alt={author.name || author.login}
+        style={{
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          border: '2px solid #00D9FF',
+          objectFit: 'cover',
+          transition: 'all 0.3s ease',
+        }}
+      />
+      {/* TEXT: Name in white/silver, font-weight 600 */}
       <span
         style={{
           fontSize: '14px',
           fontWeight: '600',
-          color: 'var(--ifm-navbar-link-color)',
+          color: '#E8E8E8',
           whiteSpace: 'nowrap',
         }}
       >
