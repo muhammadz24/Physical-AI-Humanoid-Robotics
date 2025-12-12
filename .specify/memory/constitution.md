@@ -1,5 +1,29 @@
 # Physical AI & Humanoid Robotics — Essentials Constitution
 
+<!--
+SYNC IMPACT REPORT
+==================
+Version Change: 1.1.0 → 1.2.0
+Date: 2025-12-11
+
+Modified Principles:
+- None
+
+Added Sections:
+- Principle IX: Zero-Edit Deployment Configuration
+
+Removed Sections:
+- None
+
+Templates Requiring Updates:
+✅ plan-template.md - Updated to include deployment config verification
+✅ spec-template.md - Updated to require environment variable specifications
+✅ tasks-template.md - Updated to include deployment config tasks
+
+Follow-up TODOs:
+- None
+-->
+
 ## Core Principles
 
 ### I. Simplicity-First Design
@@ -106,6 +130,48 @@ Quality Metrics:
 - Response time: <3 seconds for query → answer
 - No hallucinations: verifiable against source text
 
+### IX. Zero-Edit Deployment Configuration (NON-NEGOTIABLE)
+**All environment-specific configuration MUST use environment variables; code must deploy to any environment without manual edits.**
+
+Backend Configuration Requirements:
+- CORS origins MUST NOT be hardcoded
+- Local development origins (`http://localhost:3000`, `http://127.0.0.1:3000`) hardcoded as defaults
+- Production origin loaded from `ALLOWED_ORIGIN` environment variable
+- Logic pattern (Python/FastAPI):
+  ```python
+  import os
+  origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
+  prod_origin = os.getenv("ALLOWED_ORIGIN")
+  if prod_origin:
+      origins.append(prod_origin)
+  ```
+- Database URLs, API keys, and service endpoints MUST use environment variables
+- No manual code changes required between local/staging/production deployments
+
+Frontend Configuration Requirements:
+- Backend API URL MUST use environment-aware configuration
+- Pattern (Docusaurus/React):
+  - Use `process.env.REACT_APP_API_URL` (or framework equivalent)
+  - Fallback to `http://localhost:8000` for local development
+  - Never hardcode production URLs in source code
+- Build-time environment variables for static generation
+- Runtime environment variables for dynamic client-side config (if applicable)
+
+Deployment Documentation Requirements:
+- README MUST document all required environment variables
+- Example `.env.example` file provided with placeholders
+- Platform-specific deployment guides (Vercel, Railway, etc.) with env var setup
+- Clear separation between:
+  - **Local Development**: Uses hardcoded localhost defaults
+  - **Production**: Uses environment variables set on hosting platform
+
+Rationale:
+- Enables CI/CD without code modifications
+- Supports multiple deployment environments (staging, production)
+- Prevents accidental hardcoding of sensitive credentials
+- Reduces deployment errors and manual intervention
+- Aligns with twelve-factor app methodology
+
 ## Content Standards
 
 ### Chapter Structure Requirements
@@ -176,7 +242,7 @@ All code examples must:
 - Optional chatbot usage tracking: anonymous, aggregated only
 - No PII collection without explicit consent
 - API rate limiting to prevent abuse (if public)
-- CORS policies properly configured
+- CORS policies properly configured per Principle IX
 
 ### Dependency Security
 - Regular `npm audit` and `pip check` for vulnerabilities
@@ -192,6 +258,7 @@ All code examples must:
 3. Static site generated and deployed to GitHub Pages/Vercel
 4. RAG re-indexing triggered if content changed
 5. Smoke tests verify chatbot functionality
+6. **Environment variables verified on hosting platform** (per Principle IX)
 
 ### Monitoring & Observability
 - GitHub Pages/Vercel analytics for traffic
@@ -203,6 +270,7 @@ All code examples must:
 - Git-based rollback for content issues
 - Previous deployment artifacts retained
 - Database migrations (if any) must be reversible
+- Environment variable rollback if configuration errors occur
 
 ## Feature Roadmap Prioritization
 
@@ -211,6 +279,7 @@ All code examples must:
 2. Basic RAG chatbot integration
 3. Clean, responsive UI
 4. GitHub Pages deployment
+5. **Zero-edit deployment configuration** (Principle IX compliance)
 
 ### Phase 2: Enhanced UX (Nice-to-Have)
 1. Select-text → Ask AI functionality
@@ -241,6 +310,8 @@ All code examples must:
 - [ ] Lighthouse performance score >90
 - [ ] Mobile responsiveness tested
 - [ ] Free-tier resource limits checked
+- [ ] **Environment variables documented in README** (Principle IX)
+- [ ] **No hardcoded production URLs/credentials in code** (Principle IX)
 
 ### Before Production Release
 - [ ] All 6 chapters complete and reviewed
@@ -248,6 +319,8 @@ All code examples must:
 - [ ] Deployment pipeline tested end-to-end
 - [ ] Documentation for contributors complete
 - [ ] License and attribution files in place
+- [ ] **`.env.example` file provided with all required variables** (Principle IX)
+- [ ] **Platform-specific deployment guides complete** (Principle IX)
 
 ## Governance
 
@@ -268,6 +341,7 @@ All code examples must:
 - Regular audits of free-tier resource usage
 - Content quality reviews quarterly
 - Technical debt tracked and addressed proactively
+- **Deployment configuration audits** (verify environment variable usage, Principle IX)
 
 ### Living Document
 - This constitution evolves with the project
@@ -275,4 +349,4 @@ All code examples must:
 - Performance benchmarks adjusted based on real-world data
 - Simplicity principle never compromised
 
-**Version**: 1.1.0 | **Ratified**: 2025-12-06 | **Last Amended**: 2025-12-06
+**Version**: 1.2.0 | **Ratified**: 2025-12-06 | **Last Amended**: 2025-12-11
