@@ -2,7 +2,7 @@
 
 **Feature Branch**: `005-tune-rag-retrieval`
 **Created**: 2025-12-15
-**Status**: Draft
+**Status**: Completed
 **Input**: User description: "The RAG Chatbot returns 'I couldn't find relevant information' even for simple queries like 'What is Physical AI?'. The data is fully ingested in Qdrant. This indicates that the score_threshold in the vector search is TOO HIGH, causing relevant chunks to be filtered out. Lower the score_threshold to 0.30 or 0.40 and add DEBUG logging to print actual similarity scores."
 
 ## User Scenarios & Testing *(mandatory)*
