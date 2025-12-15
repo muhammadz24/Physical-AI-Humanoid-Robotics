@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './styles.module.css';
 
+// Safe environment variable access (FR-001, FR-002)
+// Prevents ReferenceError when process is undefined in browser
+const API_BASE_URL = (typeof process !== 'undefined' && process && process.env && process.env.REACT_APP_API_URL)
+  ? process.env.REACT_APP_API_URL
+  : 'http://localhost:8000'; // FR-003: Fallback for local development
+
 const ChatWidget = () => {
   // UI State
   const [isOpen, setIsOpen] = useState(false);
@@ -103,7 +109,7 @@ const ChatWidget = () => {
 
     try {
       // Call backend API
-      const response = await fetch('http://localhost:8000/api/chat', {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         mode: 'cors',
         credentials: 'include',

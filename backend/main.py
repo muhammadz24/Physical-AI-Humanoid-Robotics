@@ -83,10 +83,21 @@ app = FastAPI(
     debug=settings.debug
 )
 
-# Configure CORS
+# Configure CORS with environment-driven origins (Principle IX)
+# Validate and log CORS configuration (FR-004, FR-005)
+validated_origins = [
+    origin for origin in settings.allowed_origins_list
+    if origin.startswith(('http://', 'https://'))
+]
+
+if not validated_origins:
+    validated_origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+print(f"✅ Allowed CORS origins: {validated_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=validated_origins,  # Environment-driven, explicit list
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

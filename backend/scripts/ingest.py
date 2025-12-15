@@ -236,7 +236,7 @@ class IngestionPipeline:
         points = []
         for i, chunk in enumerate(chunks):
             point = PointStruct(
-                id=f"{chunk['metadata']['chapter']}-{i}",
+                id=i,  # Use integer ID as required by Qdrant
                 vector=chunk["embedding"],
                 payload={
                     "chunk_id": chunk["chunk_id"],

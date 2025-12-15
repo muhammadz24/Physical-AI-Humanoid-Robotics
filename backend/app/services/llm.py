@@ -1,34 +1,35 @@
 """
-LLM Service using OpenAI API
+LLM Service using Google Gemini API
 
-Generates contextual responses using OpenAI's GPT models.
+Generates contextual responses using Google's Gemini models.
 Enforces strict context-only answering for RAG use case.
 """
 
 from typing import List, Dict, Any, Optional
-from openai import OpenAI
+import google.generativeai as genai
 
 from app.core.config import settings
 
 
 class LLMService:
     """
-    Service for generating responses using OpenAI GPT models.
+    Service for generating responses using Google Gemini models.
 
-    Uses GPT-4 or GPT-3.5-turbo for response generation.
+    Uses gemini-1.5-flash for fast, free-tier response generation.
     Enforces strict context-only answering to prevent hallucinations.
     """
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         """
-        Initialize OpenAI client.
+        Initialize Gemini client.
 
         Args:
-            api_key: OpenAI API key (defaults to settings.openai_api_key)
-            model: Model to use (defaults to settings.openai_model)
+            api_key: Gemini API key (defaults to settings.gemini_api_key)
+            model: Model to use (defaults to settings.gemini_model)
         """
-        self.client = OpenAI(api_key=api_key or settings.openai_api_key)
-        self.model = model or settings.openai_model
+        genai.configure(api_key=api_key or settings.gemini_api_key)
+        self.model = genai.GenerativeModel(model or settings.gemini_model)
+        self.model_name = model or settings.gemini_model
 
     def generate_response(
         self,
@@ -55,8 +56,10 @@ class LLMService:
         # Construct system prompt
         system_prompt = self._get_system_prompt()
 
-        # Construct user prompt
-        user_prompt = f"""Context from the Physical AI & Humanoid Robotics textbook:
+        # Construct combined prompt (Gemini doesn't use separate system/user messages)
+        combined_prompt = f"""{system_prompt}
+
+Context from the Physical AI & Humanoid Robotics textbook:
 
 {context_text}
 
@@ -70,30 +73,27 @@ Instructions:
 - Use technical terms from the context accurately"""
 
         try:
-            # Call OpenAI API
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                max_tokens=max_tokens,
-                temperature=temperature,
-                n=1
+            # Call Gemini API
+            response = self.model.generate_content(
+                combined_prompt,
+                generation_config=genai.types.GenerationConfig(
+                    max_output_tokens=max_tokens,
+                    temperature=temperature,
+                )
             )
 
             # Extract answer
-            answer = response.choices[0].message.content.strip()
+            answer = response.text.strip()
 
-            # Calculate confidence based on finish reason and chunk scores
+            # Calculate confidence based on chunk scores
             avg_score = sum(c.get("score", 0) for c in context_chunks) / len(context_chunks)
             confidence = min(avg_score, 0.95)  # Cap at 95%
 
             return {
                 "answer": answer,
                 "confidence": confidence,
-                "model": self.model,
-                "tokens_used": response.usage.total_tokens
+                "model": self.model_name,
+                "tokens_used": None  # Gemini doesn't provide token count in response
             }
 
         except Exception as e:

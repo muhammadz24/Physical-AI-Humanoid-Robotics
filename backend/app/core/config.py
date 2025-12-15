@@ -42,9 +42,9 @@ class Settings(BaseSettings):
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     embedding_dimension: int = 384
 
-    # OpenAI Configuration
-    openai_api_key: str
-    openai_model: str = "gpt-3.5-turbo"
+    # Google Gemini Configuration
+    gemini_api_key: str
+    gemini_model: str = "gemini-1.5-flash"
 
     model_config = SettingsConfigDict(
         env_file=".env",
