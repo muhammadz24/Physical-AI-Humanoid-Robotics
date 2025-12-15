@@ -69,9 +69,9 @@ API_HOST=0.0.0.0
 API_PORT=8000
 API_VERSION=1.0.0
 
-# Real Qdrant Credentials
-QDRANT_URL=https://392dbde0-ca94-4a84-9e55-bd3106dabebe.europe-west3-0.gcp.cloud.qdrant.io
-QDRANT_API_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.KqIHIWbdZIjzGUb0yQ7n6hNpL5FeRRPec_zIG2MQ45Q
+# Qdrant Cloud Credentials
+QDRANT_URL=https://your-cluster-url.europe-west3-0.gcp.cloud.qdrant.io
+QDRANT_API_KEY=your-qdrant-api-key-here
 QDRANT_COLLECTION=textbook_embeddings
 
 # Database
@@ -85,7 +85,7 @@ EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 EMBEDDING_DIMENSION=384
 
 # Google Gemini (Replaces OpenAI)
-GEMINI_API_KEY=AIzaSyBTPYh2ZsHMbsL0NLiRRWDIRzFiCRfESc8
+GEMINI_API_KEY=your-gemini-api-key-here
 GEMINI_MODEL=gemini-1.5-flash
 ```
 
