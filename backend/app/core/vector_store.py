@@ -136,6 +136,10 @@ class VectorStoreManager:
             # Format results
             formatted_results = []
             for result in results.points:  # query_points returns QueryResponse with .points attribute
+                # Debug logging for retrieval monitoring
+                chunk_id = result.payload.get("chunk_id", f"id-{result.id}")
+                print(f"DEBUG: Found chunk '{chunk_id}' with score: {result.score:.3f}")
+
                 formatted_results.append({
                     "id": result.id,
                     "score": result.score,

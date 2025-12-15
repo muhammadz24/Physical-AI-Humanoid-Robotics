@@ -51,7 +51,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
         search_results = vector_store.search(
             query_vector=query_embedding.tolist(),
             top_k=request.top_k,
-            score_threshold=0.5,  # Lower threshold to get more results
+            score_threshold=0.35,  # Tuned threshold to include moderate-relevance chunks
             chapter_filter=request.chapter_filter
         )
 
