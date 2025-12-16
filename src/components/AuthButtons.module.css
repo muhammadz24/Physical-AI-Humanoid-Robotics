@@ -1,0 +1,88 @@
+/**
+ * AuthButtons Styles
+ *
+ * Navbar authentication button styles following Docusaurus conventions.
+ */
+
+.authButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: 0.5rem;
+}
+
+/* Login Button (Secondary style) */
+.loginButton {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ifm-color-primary);
+  background-color: transparent;
+  border: 1px solid var(--ifm-color-primary);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.loginButton:hover {
+  color: white;
+  background-color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+/* Sign Up Button (Primary style) */
+.signupButton {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: white;
+  background-color: var(--ifm-color-primary);
+  border: 1px solid var(--ifm-color-primary);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.signupButton:hover {
+  background-color: var(--ifm-color-primary-dark);
+  text-decoration: none;
+}
+
+/* User Name Display */
+.userName {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ifm-font-color-base);
+  padding: 0 0.5rem;
+}
+
+/* Logout Button */
+.logoutButton {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ifm-color-danger);
+  background-color: transparent;
+  border: 1px solid var(--ifm-color-danger);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logoutButton:hover {
+  color: white;
+  background-color: var(--ifm-color-danger);
+}
+
+/* Responsive: Hide user name on small screens */
+@media (max-width: 768px) {
+  .userName {
+    display: none;
+  }
+
+  .authButtons {
+    gap: 0.5rem;
+  }
+}
