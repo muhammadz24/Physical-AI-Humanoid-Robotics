@@ -23,6 +23,7 @@ from app.core.vector_store import vector_store
 from app.services.embedding import embedding_service
 from app.api.routes import router as chat_router
 from app.api.auth import router as auth_router
+from app.api.personalize import router as personalize_router
 
 
 @asynccontextmanager
@@ -107,6 +108,7 @@ app.add_middleware(
 # Register API routes
 app.include_router(chat_router)
 app.include_router(auth_router)
+app.include_router(personalize_router, prefix="/api", tags=["personalization"])
 
 
 @app.get("/health")

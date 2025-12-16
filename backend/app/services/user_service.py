@@ -10,6 +10,7 @@ from uuid import UUID
 import asyncpg
 
 from app.models.user import UserCreate, UserResponse
+from app.models.personalize import UserExperienceContext
 from app.core.security import hash_password
 
 
@@ -108,3 +109,33 @@ async def get_user_by_id(user_id: UUID, db_pool: asyncpg.Pool) -> Optional[dict]
         return None
 
     return dict(row)
+
+
+async def get_user_experience(user_id: UUID, db_pool: asyncpg.Pool) -> Optional[UserExperienceContext]:
+    """
+    Retrieve user's experience levels for content personalization.
+
+    Args:
+        user_id: User's UUID from JWT token
+        db_pool: Database connection pool
+
+    Returns:
+        UserExperienceContext model with experience levels, or None if user not found
+    """
+    query = """
+        SELECT id, software_experience, hardware_experience
+        FROM users
+        WHERE id = $1
+    """
+
+    async with db_pool.acquire() as conn:
+        row = await conn.fetchrow(query, user_id)
+
+    if row is None:
+        return None
+
+    return UserExperienceContext(
+        user_id=str(row['id']),
+        software_experience=row['software_experience'],
+        hardware_experience=row['hardware_experience']
+    )

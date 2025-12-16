@@ -45,6 +45,9 @@ export const API_ENDPOINTS = {
   CHAT: {
     SEND_MESSAGE: '/api/chat',
   },
+  PERSONALIZE: {
+    PERSONALIZE_CHAPTER: '/api/personalize',
+  },
 };
 
 /**

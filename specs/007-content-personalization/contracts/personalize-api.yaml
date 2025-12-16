@@ -1,0 +1,284 @@
+openapi: 3.0.3
+info:
+  title: Content Personalization API
+  description: |
+    API endpoint for personalizing educational content based on user experience levels.
+    Rewrites chapter text using Gemini LLM to match user's software and hardware experience.
+  version: 1.0.0
+  contact:
+    name: Physical AI & Humanoid Robotics Team
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://api.example.com
+    description: Production server (configure via REACT_APP_API_URL)
+
+paths:
+  /api/personalize:
+    post:
+      summary: Personalize chapter content
+      description: |
+        Accepts chapter text and user authentication, retrieves user's experience levels from database,
+        constructs LLM prompt with experience context, and returns personalized content via Gemini API.
+
+        **Authentication**: JWT token required in `access_token` cookie
+        **Rate Limit**: 10 requests per hour per user
+        **Timeout**: 30 seconds for LLM processing
+      operationId: personalizeContent
+      tags:
+        - Personalization
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalizationRequest'
+            examples:
+              chapter1:
+                summary: Introduction to ROS 2 chapter
+                value:
+                  chapter_text: "# Introduction to ROS 2\n\nROS 2 (Robot Operating System 2) is the next generation of the Robot Operating System, designed to meet the needs of modern robotics applications..."
+                  chapter_id: "chapter-1-intro-to-ros"
+              shortChapter:
+                summary: Minimal valid chapter
+                value:
+                  chapter_text: "# Short Chapter\n\nThis is a minimal valid chapter with exactly 100 characters for testing minimum length validation requirements."
+                  chapter_id: "test-chapter"
+      responses:
+        '200':
+          description: Successfully personalized content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalizationResponse'
+              examples:
+                beginnerUser:
+                  summary: Beginner user personalization
+                  value:
+                    personalized_text: "# Introduction to ROS 2 (Beginner-Friendly)\n\nROS 2 is like a communication system for robots. Think of it as a postal service that helps different parts of a robot talk to each other..."
+                    original_length: 5420
+                    personalized_length: 6180
+                    processing_time_ms: 3245
+                    user_experience:
+                      software_experience: "beginner"
+                      hardware_experience: "none"
+                    generated_at: "2025-12-16T10:30:45.123Z"
+                expertUser:
+                  summary: Expert user personalization
+                  value:
+                    personalized_text: "# ROS 2 Architecture\n\nROS 2 leverages DDS middleware for real-time pub/sub communication. Key improvements: type-safe rclcpp API, composable nodes, zero-copy intra-process..."
+                    original_length: 5420
+                    personalized_length: 4850
+                    processing_time_ms: 2890
+                    user_experience:
+                      software_experience: "pro"
+                      hardware_experience: "professional"
+                    generated_at: "2025-12-16T10:32:15.456Z"
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                chapterTooShort:
+                  summary: Chapter text too short
+                  value:
+                    detail: "chapter_text must be at least 100 characters"
+                    error_code: "INVALID_INPUT"
+                chapterTooLong:
+                  summary: Chapter text too long
+                  value:
+                    detail: "chapter_text must not exceed 50000 characters"
+                    error_code: "INVALID_INPUT"
+                missingField:
+                  summary: Missing required field
+                  value:
+                    detail:
+                      - loc: ["body", "chapter_text"]
+                        msg: "field required"
+                        type: "value_error.missing"
+        '401':
+          description: Authentication required or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingToken:
+                  summary: No access_token cookie
+                  value:
+                    detail: "Authentication required. Please log in."
+                    error_code: "UNAUTHORIZED"
+                invalidToken:
+                  summary: Expired or malformed JWT
+                  value:
+                    detail: "Invalid or expired authentication token."
+                    error_code: "UNAUTHORIZED"
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimited:
+                  summary: Too many requests
+                  value:
+                    detail: "Rate limit exceeded. You can personalize up to 10 chapters per hour. Try again in 45 minutes."
+                    error_code: "RATE_LIMITED"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                internalError:
+                  summary: Unexpected server error
+                  value:
+                    detail: "An unexpected error occurred. Please try again later."
+                    error_code: "INTERNAL_ERROR"
+        '503':
+          description: LLM service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                llmTimeout:
+                  summary: Gemini API timeout
+                  value:
+                    detail: "Personalization timed out. Please try again with a shorter chapter or retry later."
+                    error_code: "LLM_TIMEOUT"
+                quotaExceeded:
+                  summary: Gemini API quota exhausted
+                  value:
+                    detail: "AI service quota exceeded. Please try again later."
+                    error_code: "QUOTA_EXCEEDED"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: access_token
+      description: JWT access token set during signup/signin
+
+  schemas:
+    PersonalizationRequest:
+      type: object
+      required:
+        - chapter_text
+      properties:
+        chapter_text:
+          type: string
+          minLength: 100
+          maxLength: 50000
+          description: Chapter content in markdown format to be personalized
+          example: "# Introduction to ROS 2\n\nROS 2 (Robot Operating System 2) is the next generation..."
+        chapter_id:
+          type: string
+          maxLength: 100
+          nullable: true
+          pattern: '^[a-zA-Z0-9-]+$'
+          description: Optional identifier for the chapter (alphanumeric + hyphens, used for logging/analytics)
+          example: "chapter-1-intro-to-ros"
+
+    PersonalizationResponse:
+      type: object
+      required:
+        - personalized_text
+        - original_length
+        - personalized_length
+        - processing_time_ms
+        - user_experience
+        - generated_at
+      properties:
+        personalized_text:
+          type: string
+          description: Chapter content rewritten for user's experience level
+          example: "# Introduction to ROS 2 (Simplified)\n\nROS 2 is like a communication system for robots..."
+        original_length:
+          type: integer
+          minimum: 100
+          description: Character count of original chapter text
+          example: 5420
+        personalized_length:
+          type: integer
+          minimum: 0
+          description: Character count of personalized text
+          example: 6180
+        processing_time_ms:
+          type: integer
+          minimum: 0
+          description: Time taken to generate personalization (milliseconds)
+          example: 3245
+        user_experience:
+          type: object
+          description: User's experience levels used for personalization
+          required:
+            - software_experience
+            - hardware_experience
+          properties:
+            software_experience:
+              type: string
+              enum: [beginner, intermediate, pro]
+              description: User's software development experience level
+              example: "beginner"
+            hardware_experience:
+              type: string
+              enum: [none, arduino, ros, professional]
+              description: User's hardware/robotics experience level
+              example: "none"
+        generated_at:
+          type: string
+          format: date-time
+          description: Timestamp when personalization was generated (ISO 8601 UTC)
+          example: "2025-12-16T10:30:45.123Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          oneOf:
+            - type: string
+              description: Human-readable error message
+              example: "Authentication required. Please log in."
+            - type: array
+              description: Validation error details (Pydantic format)
+              items:
+                type: object
+                properties:
+                  loc:
+                    type: array
+                    items:
+                      type: string
+                    description: Location of the error (field path)
+                  msg:
+                    type: string
+                    description: Error message
+                  type:
+                    type: string
+                    description: Error type
+        error_code:
+          type: string
+          nullable: true
+          enum:
+            - UNAUTHORIZED
+            - INVALID_INPUT
+            - LLM_TIMEOUT
+            - QUOTA_EXCEEDED
+            - RATE_LIMITED
+            - INTERNAL_ERROR
+          description: Machine-readable error code for client error handling
+          example: "UNAUTHORIZED"
+
+tags:
+  - name: Personalization
+    description: Content personalization endpoints

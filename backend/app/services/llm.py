@@ -9,6 +9,7 @@ from typing import List, Dict, Any, Optional
 import google.generativeai as genai
 
 from app.core.config import settings
+from app.models.personalize import UserExperienceContext
 
 
 class LLMService:
@@ -129,6 +130,86 @@ Instructions:
             )
 
         return "\n---\n".join(context_parts)
+
+    def personalize_content(
+        self,
+        chapter_text: str,
+        user_context: UserExperienceContext,
+        timeout_seconds: int = 30
+    ) -> str:
+        """
+        Personalize chapter content based on user's experience level.
+
+        Args:
+            chapter_text: Original chapter markdown content
+            user_context: User's experience levels
+            timeout_seconds: Maximum time to wait for LLM response (default: 30s)
+
+        Returns:
+            Personalized chapter text
+
+        Raises:
+            TimeoutError: If LLM takes longer than timeout_seconds
+            Exception: For other LLM errors
+        """
+        # Build personalization prompt
+        prompt = self._build_personalization_prompt(chapter_text, user_context)
+
+        try:
+            # Call Gemini API with timeout
+            response = self.model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    max_output_tokens=8000,  # Allow longer responses for full chapters
+                    temperature=0.4,  # Slightly higher for more natural rewriting
+                ),
+                request_options={'timeout': timeout_seconds}
+            )
+
+            return response.text.strip()
+
+        except Exception as e:
+            raise Exception(f"LLM personalization failed: {str(e)}")
+
+    def _build_personalization_prompt(
+        self,
+        chapter_text: str,
+        user_context: UserExperienceContext
+    ) -> str:
+        """
+        Build LLM prompt for content personalization.
+
+        Args:
+            chapter_text: Original chapter markdown
+            user_context: User's experience levels
+
+        Returns:
+            Complete prompt for Gemini
+        """
+        adaptation_guidelines = user_context.get_adaptation_guidelines()
+        experience_context = user_context.to_prompt_context()
+
+        return f"""You are an expert educational content adapter for the Physical AI & Humanoid Robotics textbook.
+
+Your task is to rewrite the following chapter content to be appropriate for a learner with this background:
+
+{experience_context}
+
+Adaptation Guidelines:
+{adaptation_guidelines}
+
+CRITICAL REQUIREMENTS:
+1. Preserve ALL markdown structure (headings #, code blocks ```, lists, formatting)
+2. Preserve ALL code examples exactly as written - do not modify code
+3. Maintain technical accuracy - never simplify to the point of incorrectness
+4. Keep the same overall structure and flow
+5. Adjust ONLY the explanatory text and context around technical content
+
+Chapter Content to Personalize:
+
+{chapter_text}
+
+Now rewrite this chapter following the adaptation guidelines above. Return ONLY the personalized chapter content (no meta-commentary, no "Here's the personalized version..." - just the content itself)."""
 
     def _get_system_prompt(self) -> str:
         """
