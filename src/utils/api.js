@@ -28,7 +28,12 @@ try {
   }
 } catch (e) {
   // Ignore error, fallback to localhost
+  console.warn('[API Utils] Failed to read environment variable, using localhost fallback');
 }
+
+// Log which API URL is being used (helpful for debugging - Phase 5)
+console.log(`[API Utils] Using API URL: ${apiUrl}`);
+
 export const API_BASE_URL = apiUrl;
 
 /**

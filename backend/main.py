@@ -5,14 +5,6 @@ Main application file for RAG Chatbot Backend.
 Initializes FastAPI app, registers routes, and manages lifecycle events.
 """
 
-import sys
-import codecs
-
-# Fix Windows console UTF-8 encoding for emojis
-if sys.platform == 'win32' and hasattr(sys.stdout, 'buffer'):
-    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
-    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -40,40 +32,40 @@ async def lifespan(app: FastAPI):
     - Disconnect from Qdrant
     """
     # Startup
-    print("🚀 Starting FastAPI backend...")
+    print("[START] Starting FastAPI backend...")
 
     # Initialize database connection pool (non-fatal for local testing)
     try:
         await db_manager.connect()
-        print("✅ Database connection pool established")
+        print("[OK] Database connection pool established")
     except Exception as e:
-        print(f"⚠️  Database connection failed (continuing anyway): {e}")
+        print(f"[WARN] Database connection failed (continuing anyway): {e}")
 
     # Connect to Qdrant vector store (non-fatal for local testing)
     try:
         vector_store.connect()
-        print("✅ Qdrant vector store connected")
+        print("[OK] Qdrant vector store connected")
     except Exception as e:
-        print(f"⚠️  Qdrant connection failed (continuing anyway): {e}")
+        print(f"[WARN] Qdrant connection failed (continuing anyway): {e}")
 
     # Load embedding model (required for chat functionality)
     try:
-        print(f"📥 Loading embedding model: {settings.embedding_model}...")
+        print(f"[LOAD] Loading embedding model: {settings.embedding_model}...")
         embedding_service.load_model()
-        print(f"✅ Embedding model loaded successfully (dimension: {settings.embedding_dimension})")
+        print(f"[OK] Embedding model loaded successfully (dimension: {settings.embedding_dimension})")
     except Exception as e:
-        print(f"❌ Failed to load embedding model: {e}")
-        print("⚠️  Chat functionality will be limited")
+        print(f"[ERROR] Failed to load embedding model: {e}")
+        print("[WARN] Chat functionality will be limited")
 
-    print("✅ All services initialized successfully")
+    print("[OK] All services initialized successfully")
 
     yield
 
     # Shutdown
-    print("🛑 Shutting down FastAPI backend...")
+    print("[STOP] Shutting down FastAPI backend...")
     await db_manager.disconnect()
     vector_store.disconnect()
-    print("✅ All services shut down gracefully")
+    print("[OK] All services shut down gracefully")
 
 
 # Initialize FastAPI application
@@ -95,7 +87,7 @@ validated_origins = [
 if not validated_origins:
     validated_origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
-print(f"✅ Allowed CORS origins: {validated_origins}")
+print(f"[OK] Allowed CORS origins: {validated_origins}")
 
 app.add_middleware(
     CORSMiddleware,

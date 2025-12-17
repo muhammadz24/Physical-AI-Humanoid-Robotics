@@ -91,6 +91,7 @@
   border-bottom: 1px solid rgba(192, 192, 192, 0.2);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
 }
 
 [data-theme='dark'] .navbar {

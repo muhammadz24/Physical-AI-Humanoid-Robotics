@@ -45,10 +45,10 @@ class DatabaseManager:
                 command_timeout=10.0
             )
             self._is_connected = True
-            print("✅ Database connection pool established")
+            print("[OK] Database connection pool established")
         except Exception as e:
             self._is_connected = False
-            print(f"❌ Database connection failed: {e}")
+            print(f"[ERROR] Database connection failed: {e}")
             raise
 
     async def disconnect(self) -> None:
@@ -57,7 +57,7 @@ class DatabaseManager:
             await self.pool.close()
             self.pool = None
             self._is_connected = False
-            print("🔌 Database connection pool closed")
+            print("[DISCONNECTED] Database connection pool closed")
 
     @asynccontextmanager
     async def get_connection(self):

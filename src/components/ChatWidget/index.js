@@ -1,11 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './styles.module.css';
-
-// Safe environment variable access (FR-001, FR-002)
-// Prevents ReferenceError when process is undefined in browser
-const API_BASE_URL = (typeof process !== 'undefined' && process && process.env && process.env.REACT_APP_API_URL)
-  ? process.env.REACT_APP_API_URL
-  : 'http://localhost:8000'; // FR-003: Fallback for local development
+import { API_BASE_URL } from '@site/src/config/api';
 
 const ChatWidget = () => {
   // UI State

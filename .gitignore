@@ -72,3 +72,6 @@ coverage/
 # Misc
 *.bak
 *.backup
+
+.vercel
+.env*.local
