@@ -14,8 +14,8 @@ from app.services.llm import llm_service
 from app.core.vector_store import vector_store
 
 
-# Create API router
-router = APIRouter(prefix="/api", tags=["chat"])
+# Create API router (prefix added in main.py for explicit routing)
+router = APIRouter(tags=["chat"])
 
 
 @router.post("/chat", response_model=ChatResponse)

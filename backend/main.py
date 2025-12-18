@@ -97,9 +97,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register API routes
-app.include_router(chat_router)
-app.include_router(auth_router)
+# Register API routes with explicit /api prefixes (Feature 012.2)
+# This ensures all backend routes match frontend expectations (e.g., /api/chat, /api/auth/*)
+app.include_router(chat_router, prefix="/api")
+app.include_router(auth_router, prefix="/api/auth")
 app.include_router(personalize_router, prefix="/api", tags=["personalization"])
 
 

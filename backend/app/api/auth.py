@@ -13,7 +13,8 @@ from app.core.database import db_manager
 from app.core.security import create_access_token, verify_password
 
 
-router = APIRouter(prefix="/api/auth", tags=["Authentication"])
+# Router (prefix added in main.py for explicit routing)
+router = APIRouter(tags=["Authentication"])
 
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
