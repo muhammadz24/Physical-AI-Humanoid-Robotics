@@ -99,11 +99,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register API routes with explicit /api prefixes (Feature 012.2)
-# This ensures all backend routes match frontend expectations (e.g., /api/chat, /api/auth/*)
-app.include_router(chat_router, prefix="/api")
-app.include_router(auth_router, prefix="/api/auth")
-app.include_router(personalize_router, prefix="/api", tags=["personalization"])
+# Feature 012.5: Dual-Routing Strategy (Shotgun Approach)
+# Register routers TWICE to handle Vercel path rewriting ambiguity:
+# Case 1: Vercel passes full path (/api/chat) → matches prefix="/api" routes
+# Case 2: Vercel strips /api (/chat) → matches no-prefix routes
+# This guarantees 200 OK regardless of Vercel's edge rewriting behavior
+
+# Routes WITH /api prefix (for full path scenarios)
+app.include_router(chat_router, prefix="/api", tags=["chat-with-prefix"])
+app.include_router(auth_router, prefix="/api/auth", tags=["auth-with-prefix"])
+app.include_router(personalize_router, prefix="/api", tags=["personalize-with-prefix"])
+
+# Routes WITHOUT /api prefix (for stripped path scenarios)
+app.include_router(chat_router, tags=["chat-no-prefix"])
+app.include_router(auth_router, prefix="/auth", tags=["auth-no-prefix"])
+app.include_router(personalize_router, tags=["personalize-no-prefix"])
 
 
 @app.get("/health")
