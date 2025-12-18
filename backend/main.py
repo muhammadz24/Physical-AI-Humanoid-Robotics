@@ -69,12 +69,14 @@ async def lifespan(app: FastAPI):
 
 
 # Initialize FastAPI application
+# Feature 012.3: Disable redirect_slashes to prevent 307 redirects that cause 405 in serverless/CORS
 app = FastAPI(
     title="Physical AI & Humanoid Robotics RAG Chatbot",
     description="FastAPI backend for textbook RAG chatbot with Qdrant vector search",
     version=settings.api_version,
     lifespan=lifespan,
-    debug=settings.debug
+    debug=settings.debug,
+    redirect_slashes=False  # Prevent trailing slash redirects (307) that fail as 405 in serverless
 )
 
 # Configure CORS with environment-driven origins (Principle IX)
@@ -93,7 +95,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=validated_origins,  # Environment-driven, explicit list
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"],  # Includes OPTIONS for CORS preflight (critical for POST/PUT/DELETE)
     allow_headers=["*"],
 )
 
