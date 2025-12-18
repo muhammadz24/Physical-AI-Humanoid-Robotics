@@ -61,6 +61,7 @@ const config = {
 
       navbar: {
         title: 'Physical AI & Humanoid Robotics',
+        hideOnScroll: true,
         logo: {
           alt: 'Logo',
           src: 'img/logo.svg',

@@ -294,7 +294,7 @@
 /* Select-to-Ask Tooltip */
 .selectTooltip {
   position: absolute;
-  z-index: 100;
+  z-index: 99; /* Z-index 99: Below navbar (100) to prevent overlap with hamburger menu */
   animation: fadeIn 0.2s ease;
 }
 
