@@ -1,46 +1,43 @@
 /**
  * API Configuration
  *
- * Centralized API URL configuration for environment-agnostic deployment.
+ * Automatically detects localhost vs. production and uses appropriate API URL.
  *
  * Constitution Compliance:
- * - Principle IX: Zero-Edit Deployment (works in dev and prod automatically)
+ * - Principle IX: Zero-Edit Deployment (auto-detection, no env vars needed)
  *
- * Feature: 009-ultimate-fix (Phase 5 - Smart API Configuration)
- * Success Criteria: FR-007, FR-008, SC-005
+ * Feature: 009.1-hotfix-smart-routing
+ * Fixes: Production API connection, dynamic environment detection
  */
 
 /**
- * Base URL for backend API.
- *
- * Environment-driven configuration:
- * - Local Development: http://localhost:8000 (default fallback)
- * - Production: Set REACT_APP_API_URL in Vercel environment variables
- *
- * Note: This project uses Docusaurus which requires REACT_APP_* prefix
- * (not NEXT_PUBLIC_* which is for Next.js)
- *
- * IMPORTANT: NO HARDCODING - This allows the same build to work in
- * local development and production without code changes.
+ * Detect if running on localhost
+ * - window.location.hostname === 'localhost' (dev server)
+ * - window.location.hostname === '127.0.0.1' (alternative localhost)
  */
-let API_BASE_URL = 'http://localhost:8000';
+const isLocalhost = typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
-// Safe check for process.env to avoid ReferenceError in browser
-try {
-  if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) {
-    API_BASE_URL = process.env.REACT_APP_API_URL;
-  }
-} catch (e) {
-  // Ignore error, fallback to localhost
-  console.warn('[API Config] Failed to read environment variable, using localhost fallback');
+/**
+ * Base URL for backend API
+ * - Localhost: 'http://localhost:8000' (separate backend server)
+ * - Production/Vercel: '' (relative URLs, same domain as frontend)
+ *
+ * Examples:
+ * - Localhost: API_BASE_URL + '/api/chat' = 'http://localhost:8000/api/chat'
+ * - Production: API_BASE_URL + '/api/chat' = '/api/chat' (relative, same origin)
+ */
+export const API_BASE_URL = isLocalhost ? 'http://localhost:8000' : '';
+
+/**
+ * Log API configuration for debugging
+ * Safe to log: no secrets, just configuration info
+ */
+if (typeof console !== 'undefined') {
+  console.log(`[API Config] Mode: ${isLocalhost ? 'LOCALHOST' : 'PRODUCTION'}`);
+  console.log(`[API Config] API Base: ${API_BASE_URL || '(relative URLs)'}`);
+  console.log(`[API Config] Example URL: ${API_BASE_URL}/api/chat`);
 }
-
-// Log which API URL is being used (helpful for debugging)
-console.log(`[API Config] Using API URL: ${API_BASE_URL}`);
-console.log(`[API Config] Environment: ${process.env.NODE_ENV || 'development'}`);
-
-// Export as constant
-export { API_BASE_URL };
 
 /**
  * Usage in components:
