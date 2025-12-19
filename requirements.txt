@@ -4,3 +4,5 @@ pydantic
 requests
 python-multipart
 pydantic-settings
+asyncpg
+sqlalchemy
