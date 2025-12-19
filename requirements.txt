@@ -12,4 +12,3 @@ langchain
 langchain-community
 langchain-openai
 tiktoken
-sentence-transformers
