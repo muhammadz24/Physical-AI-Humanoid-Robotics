@@ -6,3 +6,9 @@ python-multipart
 pydantic-settings
 asyncpg
 sqlalchemy
+qdrant-client
+openai
+langchain
+langchain-community
+langchain-openai
+tiktoken
