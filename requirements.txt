@@ -11,3 +11,4 @@ langchain
 langchain-community
 langchain-google-genai
 tiktoken
+email-validator
