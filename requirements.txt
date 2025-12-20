@@ -12,3 +12,5 @@ langchain-community
 langchain-google-genai
 tiktoken
 email-validator
+passlib[bcrypt]
+python-jose
