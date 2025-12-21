@@ -1,8 +1,4 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.py"
-    }
-  ]
+  "installCommand": "pip install --no-cache-dir -r backend/requirements.txt",
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/index.py" }]
 }

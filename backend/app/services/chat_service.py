@@ -1,11 +1,10 @@
 from typing import List, Dict, Any
 import time
-from app.services.embedding import embedding_service
+from app.services.embedding import get_embedding
 from app.services.qdrant import qdrant_service
 from app.services.llm import llm_service
 from app.models.chat import ChatResponse, Citation
 
-# FORCE UPDATE: Removed legacy _is_loaded checks
 class ChatService:
     async def process_query(self, query: str) -> ChatResponse:
         """
@@ -14,8 +13,8 @@ class ChatService:
         start_time = time.time()
 
         try:
-            # 1. Generate embedding (Async API call)
-            query_vector = await embedding_service.get_embedding(query)
+            # 1. Generate embedding using Gemini API
+            query_vector = await get_embedding(query)
 
             # 2. Search Vector DB
             search_results = await qdrant_service.search(query_vector)

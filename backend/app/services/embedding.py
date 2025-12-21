@@ -1,21 +1,14 @@
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+import google.generativeai as genai
+from app.core.config import settings
 import os
 
-class EmbeddingService:
-    def __init__(self):
-        # Ensure GOOGLE_API_KEY is set in Vercel Environment Variables
-        # Using the standard free embedding model
-        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+# Safety check for runtime
+api_key = settings.gemini_api_key or os.getenv("GEMINI_API_KEY")
+if not api_key:
+    raise ValueError("CRITICAL: GEMINI_API_KEY is missing in environment variables")
 
-    async def get_embedding(self, text: str):
-        """Generate embedding for a single text string."""
-        try:
-            # Generate embedding using Google Gemini
-            return self.embeddings.embed_query(text)
-        except Exception as e:
-            print(f"Error generating embedding: {e}")
-            # Fallback (768 dimensions for Gemini embedding-001) just in case
-            return [0.0] * 768
+genai.configure(api_key=api_key)
 
-# Create a singleton instance
-embedding_service = EmbeddingService()
+async def get_embedding(text: str):
+    result = genai.embed_content(model="models/embedding-001", content=text, task_type="retrieval_query")
+    return result['embedding']
