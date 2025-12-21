@@ -10,5 +10,5 @@ if not api_key:
 genai.configure(api_key=api_key)
 
 async def get_embedding(text: str):
-    result = genai.embed_content(model="models/embedding-001", content=text, task_type="retrieval_query")
+    result = genai.embed_content(model="models/text-embedding-004", content=text, task_type="retrieval_document")
     return result['embedding']

@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     # Qdrant Vector Database
     qdrant_url: str
     qdrant_api_key: str
-    qdrant_collection: str = "textbook_embeddings"
+    qdrant_collection: str = "textbook"
 
     # Neon Postgres Database
     database_url: str
@@ -39,8 +39,8 @@ class Settings(BaseSettings):
     rate_limit_per_minute: int = 10
 
     # Embeddings Configuration
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
-    embedding_dimension: int = 384
+    embedding_model: str = "models/text-embedding-004"
+    embedding_dimension: int = 768
 
     # Google Gemini Configuration
     gemini_api_key: str
