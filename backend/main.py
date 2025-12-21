@@ -4,15 +4,17 @@ from app.api.routes import router as chat_router
 from app.api.auth import router as auth_router
 from app.api.personalize import router as personalize_router
 
+# FIXED: Added redirect_slashes=False to prevent 307 redirects that cause 405
 app = FastAPI(
     title="Physical AI & Humanoid Robotics Chatbot",
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json"
+    openapi_url="/api/openapi.json",
+    redirect_slashes=False  # CRITICAL: Prevents trailing slash redirects
 )
 
-# CORS - Allow all origins (adjust for production)
+# CORS - Allow all origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

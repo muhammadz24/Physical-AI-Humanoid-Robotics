@@ -4,12 +4,13 @@ from app.services.chat_service import chat_service
 
 router = APIRouter()
 
-# Fixed path: prefix in main.py is "/api/chat", so path here should be "/"
-# Final URL: POST /api/chat
-@router.post("/", response_model=ChatResponse)
+# FIXED: Empty string route to match prefix exactly
+# Main.py sets prefix="/api/chat", route="" = /api/chat (no trailing slash)
+@router.post("", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
     Process user query via ChatService.
+    Final URL: POST /api/chat
     """
     try:
         # Delegate purely to the service layer
