@@ -1,48 +1,21 @@
-"""
-API Routes for RAG Chatbot
-
-Implements POST /chat endpoint for question answering.
-"""
-
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException
 from app.models.chat import ChatRequest, ChatResponse
 from app.services.chat_service import chat_service
 
-# Create API router (prefix added in main.py for explicit routing)
-router = APIRouter(tags=["chat"])
+router = APIRouter()
 
-
-@router.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest) -> ChatResponse:
+# Fixed path: prefix in main.py is "/api/chat", so path here should be "/"
+# Final URL: POST /api/chat
+@router.post("/", response_model=ChatResponse)
+async def chat(request: ChatRequest):
     """
-    Process user query and return AI-generated answer with citations.
-
-    Flow:
-    1. Generate embedding for user query
-    2. Search Qdrant for top-k relevant chunks
-    3. Pass query + chunks to LLM for answer generation
-    4. Return answer with citations
-
-    Args:
-        request: ChatRequest with user query and options
-
-    Returns:
-        ChatResponse with answer and source citations
-
-    Raises:
-        HTTPException: If query processing fails
+    Process user query via ChatService.
     """
     try:
-        # Delegate to chat_service which handles the full RAG pipeline
-        response = await chat_service.process_query(request.query)
-        return response
-
+        # Delegate purely to the service layer
+        # No manual embedding checks here
+        return await chat_service.process_query(request.query)
     except Exception as e:
-        print(f"❌ Chat endpoint error: {e}")
         import traceback
         traceback.print_exc()
-
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to process query: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Route Error: {str(e)}")
