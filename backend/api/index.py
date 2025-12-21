@@ -1,10 +1,9 @@
 import sys
 import os
+from pathlib import Path
 
 # Project root ko path mein shamil karein
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
-# Seedha 'backend' folder se app import karein
 from backend.main import app
-
-# Vercel ko ye 'app' variable chahiye
