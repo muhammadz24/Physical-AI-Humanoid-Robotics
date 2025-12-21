@@ -68,11 +68,21 @@ vercel --prod
 vercel dev
 ```
 
-**Important routing notes:**
-- `vercel.json` rewrites `/api/*` to `/api/index.py`
-- `api/index.py` imports FastAPI app from `backend.main`
-- Backend routes MUST use `/api/` prefix in production
-- `backend/main.py` has `redirect_slashes=False` to prevent 405 errors
+**CRITICAL routing architecture (to prevent 405 errors):**
+- `vercel.json` rewrites `/api/*` → `/api/index.py`
+- `api/index.py` imports FastAPI app from `backend.main:app`
+- `backend/main.py` includes routers WITH `/api/` prefix:
+  - `app.include_router(chat_router, prefix="/api/chat")`
+  - `app.include_router(auth_router, prefix="/api/auth")`
+  - `app.include_router(personalize_router, prefix="/api/personalize")`
+- `backend/main.py` has `redirect_slashes=False` (REQUIRED)
+- Final URLs: `/api/health`, `/api/chat`, `/api/auth/*`, `/api/personalize`
+
+**Why this matters:**
+- Routes without `/api/` prefix cause 405 Method Not Allowed on Vercel
+- The `/api/` prefix must be in `backend/main.py`, NOT added by Vercel rewrite
+- Local dev: Run `uvicorn backend.main:app` - routes work at `localhost:8000/api/*`
+- Vercel: Routes work at `yourapp.vercel.app/api/*`
 
 ---
 
@@ -162,7 +172,15 @@ backend/
 - Code blocks use Prism for syntax highlighting (configured in `docusaurus.config.js`)
 
 ### 2. Backend API Patterns
-- All API routes must have `/api/` prefix for Vercel routing
+- **Router pattern**: Individual routers define routes WITHOUT prefix, main.py adds `/api/*` prefix:
+  ```python
+  # In backend/app/api/routes.py
+  @router.post("")  # NOT @router.post("/chat")
+
+  # In backend/main.py
+  app.include_router(chat_router, prefix="/api/chat")  # Final: POST /api/chat
+  ```
+- All API routes MUST have `/api/` prefix when included in main.py
 - Environment config via Pydantic Settings (see `backend/app/core/config.py`)
 - Database connections are async (asyncpg for Postgres)
 - Vector search uses Qdrant client with cosine similarity
