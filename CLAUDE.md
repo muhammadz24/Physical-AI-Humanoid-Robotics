@@ -68,21 +68,42 @@ vercel --prod
 vercel dev
 ```
 
-**CRITICAL routing architecture (to prevent 405 errors):**
-- `vercel.json` rewrites `/api/*` → `/api/index.py`
-- `api/index.py` imports FastAPI app from `backend.main:app`
-- `backend/main.py` includes routers WITH `/api/` prefix:
-  - `app.include_router(chat_router, prefix="/api/chat")`
-  - `app.include_router(auth_router, prefix="/api/auth")`
-  - `app.include_router(personalize_router, prefix="/api/personalize")`
-- `backend/main.py` has `redirect_slashes=False` (REQUIRED)
-- Final URLs: `/api/health`, `/api/chat`, `/api/auth/*`, `/api/personalize`
+**CRITICAL routing architecture (FINAL - prevents 405 errors):**
 
-**Why this matters:**
-- Routes without `/api/` prefix cause 405 Method Not Allowed on Vercel
-- The `/api/` prefix must be in `backend/main.py`, NOT added by Vercel rewrite
-- Local dev: Run `uvicorn backend.main:app` - routes work at `localhost:8000/api/*`
-- Vercel: Routes work at `yourapp.vercel.app/api/*`
+```
+User request: /api/chat
+    ↓
+vercel.json rewrites: /api/(.*) → /api/index.py
+    ↓
+api/index.py imports: from backend.main import app
+    ↓
+backend/main.py routers: prefix="/chat" (NO /api prefix)
+    ↓
+Final route: /chat (within app context)
+    ↓
+Vercel serves at: /api/chat ✅
+```
+
+**Key files:**
+- `vercel.json`: Single rewrite rule `/api/(.*)` → `/api/index.py`
+- `api/index.py`: Clean import of `backend.main:app` (no decorators, no modifications)
+- `backend/main.py`: Routers WITHOUT `/api/` prefix:
+  - `app.include_router(chat_router, prefix="/chat")`
+  - `app.include_router(auth_router, prefix="/auth")`
+  - `app.include_router(personalize_router, prefix="/personalize")`
+- `backend/main.py`: Has `redirect_slashes=False` (REQUIRED)
+
+**Final URLs:**
+- `/api/health`
+- `/api/chat`
+- `/api/auth/signup`, `/api/auth/signin`
+- `/api/personalize`
+
+**Why this architecture:**
+- Vercel's rewrite adds `/api` context at the serverless function level
+- Adding `/api` prefix in `backend/main.py` causes double-prefix issues
+- The app sees routes as `/chat`, `/auth`, etc., but Vercel serves them at `/api/chat`, `/api/auth`
+- Frontend MUST call `/api/chat` (no trailing slash)
 
 ---
 
@@ -172,15 +193,17 @@ backend/
 - Code blocks use Prism for syntax highlighting (configured in `docusaurus.config.js`)
 
 ### 2. Backend API Patterns
-- **Router pattern**: Individual routers define routes WITHOUT prefix, main.py adds `/api/*` prefix:
+- **Router pattern**: Individual routers define routes WITHOUT any prefix, main.py adds resource prefix:
   ```python
   # In backend/app/api/routes.py
-  @router.post("")  # NOT @router.post("/chat")
+  @router.post("")  # Empty string for exact prefix match
 
   # In backend/main.py
-  app.include_router(chat_router, prefix="/api/chat")  # Final: POST /api/chat
+  app.include_router(chat_router, prefix="/chat")  # NO /api here!
+  # Vercel rewrite adds /api context → Final URL: POST /api/chat
   ```
-- All API routes MUST have `/api/` prefix when included in main.py
+- Routers in `backend/main.py` use resource-level prefix ONLY (e.g., `/chat`, `/auth`)
+- The `/api` prefix is added by Vercel's rewrite rule, NOT in Python code
 - Environment config via Pydantic Settings (see `backend/app/core/config.py`)
 - Database connections are async (asyncpg for Postgres)
 - Vector search uses Qdrant client with cosine similarity
