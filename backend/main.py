@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router as chat_router
 from app.api.auth import router as auth_router
@@ -34,4 +35,7 @@ app.include_router(personalize_router, prefix="/personalize", tags=["personalize
 def health_check():
     return {"status": "healthy", "service": "physical-ai-chatbot"}
 
-# REMOVED ROOT "/" route to let Vercel serve the Frontend
+# FIXED: Redirect Root to Docs so users don't see 404
+@app.get("/")
+def root():
+    return RedirectResponse(url="/docs")
