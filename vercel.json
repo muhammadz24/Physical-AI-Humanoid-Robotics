@@ -1,4 +1,5 @@
 {
-  "installCommand": "pip install --no-cache-dir -r backend/requirements.txt",
+  "installCommand": "npm install && pip install --no-cache-dir -r backend/requirements.txt",
+  "buildCommand": "npm run build",
   "rewrites": [{ "source": "/api/(.*)", "destination": "/api/index.py" }]
 }
