@@ -1,10 +1,5 @@
 import sys
 import os
-from pathlib import Path
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-# Add project root to path
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
-
-# Import FastAPI app from backend.main
 from backend.main import app

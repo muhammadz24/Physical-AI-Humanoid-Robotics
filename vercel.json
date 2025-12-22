@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "installCommand": "npm install && pip install --no-cache-dir --force-reinstall -r backend/requirements.txt",
+  "installCommand": "npm install && pip install -r backend/requirements.txt",
   "buildCommand": "npm run build",
   "rewrites": [{ "source": "/api/(.*)", "destination": "/api/index.py" }]
 }
