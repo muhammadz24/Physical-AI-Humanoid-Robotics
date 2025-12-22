@@ -1,7 +1,12 @@
 import sys
 import os
+from pathlib import Path
 
-# Add the project root to sys.path so 'backend' can be found
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Fix pathing once and for all
+root_dir = Path(__file__).parent.parent
+sys.path.append(str(root_dir))
 
 from backend.main import app
+
+# This is for Vercel
+handler = app
