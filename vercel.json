@@ -1,6 +1,11 @@
 {
   "version": 2,
-  "installCommand": "npm install && pip install -r backend/requirements.txt",
-  "buildCommand": "npm run build",
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/index.py" }]
+  "builds": [
+    { "src": "api/index.py", "use": "@vercel/python" },
+    { "src": "package.json", "use": "@vercel/static-build" }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "api/index.py" },
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
 }
