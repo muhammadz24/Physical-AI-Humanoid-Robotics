@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "outputDirectory": "build",
   "builds": [
     { "src": "api/index.py", "use": "@vercel/python" },
     { "src": "package.json", "use": "@vercel/static-build" }
