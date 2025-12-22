@@ -4,10 +4,7 @@
     {
       "src": "api/index.py",
       "use": "@vercel/python",
-      "config": {
-        "includeFiles": ["backend/app/**", "backend/main.py"],
-        "excludeFiles": ["docs/**", "node_modules/**", "build/**"]
-      }
+      "config": { "includeFiles": ["backend/**"] }
     },
     {
       "src": "package.json",
@@ -16,7 +13,13 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "api/index.py" },
-    { "source": "/(.*)", "destination": "/$1" }
+    {
+      "source": "/api/(.*)",
+      "destination": "api/index.py"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/$1"
+    }
   ]
 }
