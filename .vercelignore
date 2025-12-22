@@ -1,6 +1,4 @@
 node_modules
-build
-docs
 public
 *.md
 tests

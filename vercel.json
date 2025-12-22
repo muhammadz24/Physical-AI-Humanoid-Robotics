@@ -6,7 +6,7 @@
       "use": "@vercel/python",
       "config": {
         "includeFiles": ["backend/app/**", "backend/main.py"],
-        "excludeFiles": ["node_modules/**", "build/**", "docs/**"]
+        "excludeFiles": ["docs/**", "node_modules/**", "build/**"]
       }
     },
     {
