@@ -37,13 +37,18 @@ class DatabaseManager:
             return
 
         try:
-            self.pool = await asyncpg.create_pool(
+            self._pool = await asyncpg.create_pool(
                 dsn=settings.database_url,
-                min_size=2,
-                max_size=10,
-                timeout=30.0,
-                command_timeout=10.0
+                min_size=1,
+                max_size=5,
+                command_timeout=60,
+                ssl='require',
+                server_settings={
+                    'application_name': 'fastapi_vercel',
+                    'statement_timeout': '60000'
+                }
             )
+            self.pool = self._pool
             self._is_connected = True
             print("[OK] Database connection pool established")
         except Exception as e:
