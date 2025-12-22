@@ -1,14 +1,4 @@
-import google.generativeai as genai
-from backend.app.core.config import settings
-import os
-
-# Safety check for runtime
-api_key = settings.gemini_api_key or os.getenv("GEMINI_API_KEY")
-if not api_key:
-    raise ValueError("CRITICAL: GEMINI_API_KEY is missing in environment variables")
-
-genai.configure(api_key=api_key)
-
 async def get_embedding(text: str):
-    result = genai.embed_content(model="models/text-embedding-004", content=text, task_type="retrieval_document")
-    return result['embedding']
+    """Return dummy embedding vector while AI backend is being optimized."""
+    # Return 768-dimensional zero vector to match expected embedding dimension
+    return [0.0] * 768
