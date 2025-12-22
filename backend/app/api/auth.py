@@ -7,10 +7,10 @@ Handles user signup, signin, and session management using JWT tokens.
 from fastapi import APIRouter, HTTPException, status, Response
 from asyncpg.exceptions import UniqueViolationError
 
-from app.models.user import UserCreate, UserLogin, UserResponse
-from app.services import user_service
-from app.core.database import db_manager
-from app.core.security import create_access_token, verify_password
+from backend.app.models.user import UserCreate, UserLogin, UserResponse
+from backend.app.services import user_service
+from backend.app.core.database import db_manager
+from backend.app.core.security import create_access_token, verify_password
 
 
 # Router (prefix added in main.py for explicit routing)

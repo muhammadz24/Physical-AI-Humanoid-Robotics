@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import router as chat_router
-from app.api.auth import router as auth_router
-from app.api.personalize import router as personalize_router
+from backend.app.api.routes import router as chat_router
+from backend.app.api.auth import router as auth_router
+from backend.app.api.personalize import router as personalize_router
 
 app = FastAPI(
     title="Physical AI & Humanoid Robotics Chatbot",

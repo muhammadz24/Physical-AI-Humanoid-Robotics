@@ -1,9 +1,9 @@
 from typing import List, Dict, Any
 import time
-from app.services.embedding import get_embedding
-from app.services.qdrant import qdrant_service
-from app.services.llm import llm_service
-from app.models.chat import ChatResponse, Citation
+from backend.app.services.embedding import get_embedding
+from backend.app.services.qdrant import qdrant_service
+from backend.app.services.llm import llm_service
+from backend.app.models.chat import ChatResponse, Citation
 
 class ChatService:
     async def process_query(self, query: str) -> ChatResponse:

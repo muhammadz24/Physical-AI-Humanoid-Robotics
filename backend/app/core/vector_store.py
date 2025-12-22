@@ -9,7 +9,7 @@ from typing import List, Dict, Any, Optional
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct, Filter
 
-from app.core.config import settings
+from backend.app.core.config import settings
 
 
 class VectorStoreManager:

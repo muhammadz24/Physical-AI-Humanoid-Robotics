@@ -12,15 +12,15 @@ from typing import Dict, Any
 from uuid import UUID
 import time
 
-from app.models.personalize import (
+from backend.app.models.personalize import (
     PersonalizationRequest,
     PersonalizationResponse,
     ErrorResponse
 )
-from app.services import user_service
-from app.services.llm import llm_service
-from app.core.database import db_manager
-from app.core.security import decode_access_token
+from backend.app.services import user_service
+from backend.app.services.llm import llm_service
+from backend.app.core.database import db_manager
+from backend.app.core.security import decode_access_token
 
 
 router = APIRouter()

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.models.chat import ChatRequest, ChatResponse
-from app.services.chat_service import chat_service
+from backend.app.models.chat import ChatRequest, ChatResponse
+from backend.app.services.chat_service import chat_service
 
 router = APIRouter()
 

@@ -32,10 +32,10 @@ if sys.platform == 'win32':
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.services.embedding import get_embedding
-from app.services.parser import MarkdownParser
-from app.services.chunker import TextChunker
-from app.services.qdrant import qdrant_service
+from backend.app.services.embedding import get_embedding
+from backend.app.services.parser import MarkdownParser
+from backend.app.services.chunker import TextChunker
+from backend.app.services.qdrant import qdrant_service
 
 from qdrant_client.models import PointStruct
 from tqdm import tqdm

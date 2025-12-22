@@ -48,6 +48,10 @@ uvicorn backend.main:app --reload
 # Run database migrations
 cd backend
 python run_migration.py
+
+# Populate Qdrant vector database with textbook content
+cd backend
+python scripts/ingest.py
 ```
 
 ### Deployment
@@ -207,7 +211,11 @@ backend/
 - Environment config via Pydantic Settings (see `backend/app/core/config.py`)
 - Database connections are async (asyncpg for Postgres)
 - Vector search uses Qdrant client with cosine similarity
-- Embeddings: sentence-transformers/all-MiniLM-L6-v2 (384 dimensions)
+- **CRITICAL**: Embeddings use Google Gemini `models/text-embedding-004` (768 dimensions)
+  - Config: `backend/app/core/config.py` sets `embedding_dimension = 768`
+  - Service: `backend/app/services/embedding.py` uses `genai.embed_content()`
+  - Collection: Qdrant collection "textbook" MUST be configured for 768-dim vectors
+  - **If you change embedding model or dimensions, you MUST recreate the Qdrant collection and re-ingest data**
 
 ### 3. Authentication Flow
 - JWT-based authentication (tokens in localStorage)
@@ -222,6 +230,40 @@ backend/
 4. Retrieve context from vector search results
 5. Generate response via LLM (Google Gemini API)
 6. Log interaction to Neon Postgres for analytics
+
+---
+
+## Data Ingestion & Vector Database Setup
+
+**CRITICAL**: The RAG chatbot requires textbook content to be ingested into Qdrant before it can answer questions.
+
+### Ingestion Script
+Located at: `backend/scripts/ingest.py`
+
+**What it does:**
+1. Parses all Markdown files in `/docs` directory
+2. Chunks content into semantic blocks
+3. Generates 768-dimensional embeddings using Google Gemini API
+4. Uploads chunks with metadata to Qdrant collection "textbook"
+
+**When to run:**
+- Initial setup (after cloning repo)
+- After adding/modifying textbook content in `/docs`
+- After changing embedding model or dimensions
+- After recreating Qdrant collection
+
+**How to run:**
+```bash
+cd backend
+# Ensure .env has QDRANT_URL, QDRANT_API_KEY, GEMINI_API_KEY
+python scripts/ingest.py
+```
+
+**Verification:**
+```bash
+# Check collection exists and has correct dimensions
+python -c "from qdrant_client import QdrantClient; import os; client = QdrantClient(url=os.getenv('QDRANT_URL'), api_key=os.getenv('QDRANT_API_KEY')); print(client.get_collection('textbook'))"
+```
 
 ---
 
@@ -296,6 +338,24 @@ npm run serve            # Verify built site works
 - Verify `DATABASE_URL` includes `?sslmode=require`
 - Check Neon project is active (free tier has compute limits)
 - Test connection: `psql $DATABASE_URL`
+
+### 500 Internal Server Error After Deployment
+**Problem:** API returns 500 errors after successful deployment
+**Common Causes:**
+1. **Environment variables not synced**: Check Vercel dashboard for all required env vars
+2. **Embedding dimension mismatch**: Qdrant collection configured for wrong dimensions
+   - Current config: 768 dimensions (Google Gemini text-embedding-004)
+   - Verify with: Check `backend/app/core/config.py` line 43
+   - If changed: Must recreate Qdrant collection and re-run `backend/scripts/ingest.py`
+3. **Missing API keys**: `GEMINI_API_KEY` must be set in Vercel environment
+4. **Qdrant collection not populated**: Run ingestion script to populate vector database
+
+**Quick Fix:**
+```bash
+# Force Vercel rebuild to pick up environment changes
+git commit --allow-empty -m "Force rebuild to sync environment"
+git push origin main
+```
 
 ---
 

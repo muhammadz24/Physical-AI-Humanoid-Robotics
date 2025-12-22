@@ -24,7 +24,7 @@ import os
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from app.core.config import settings
+from backend.app.core.config import settings
 
 
 async def run_migrations():

@@ -9,9 +9,9 @@ from typing import Optional
 from uuid import UUID
 import asyncpg
 
-from app.models.user import UserCreate, UserResponse
-from app.models.personalize import UserExperienceContext
-from app.core.security import hash_password
+from backend.app.models.user import UserCreate, UserResponse
+from backend.app.models.personalize import UserExperienceContext
+from backend.app.core.security import hash_password
 
 
 async def create_user(user: UserCreate, db_pool: asyncpg.Pool) -> UserResponse:

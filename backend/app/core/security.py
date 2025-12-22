@@ -10,7 +10,7 @@ from typing import Optional, Dict, Any
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 
-from app.core.config import settings
+from backend.app.core.config import settings
 
 
 # Password hashing context using bcrypt

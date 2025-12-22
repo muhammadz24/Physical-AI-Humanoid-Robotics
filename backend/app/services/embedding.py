@@ -1,5 +1,5 @@
 import google.generativeai as genai
-from app.core.config import settings
+from backend.app.core.config import settings
 import os
 
 # Safety check for runtime
