@@ -60,13 +60,17 @@ export default function AuthButtons() {
     );
   }
 
-  // Authenticated user - show Logout button
+  // Authenticated user - show User Name (clickable link to profile) + Logout button
   return (
     <div className={styles.authButtons}>
       {user && (
-        <span className={styles.userName}>
+        <Link
+          to="/profile"
+          className={styles.userNameLink}
+          title="View Profile"
+        >
           {user.name}
-        </span>
+        </Link>
       )}
       <button
         onClick={handleLogout}

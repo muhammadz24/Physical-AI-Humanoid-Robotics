@@ -50,12 +50,36 @@
   text-decoration: none;
 }
 
-/* User Name Display */
+/* User Name Display (Static - Legacy) */
 .userName {
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--ifm-font-color-base);
   padding: 0 0.5rem;
+}
+
+/* User Name Link (Clickable - Links to Profile) */
+.userNameLink {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.userNameLink:hover {
+  color: var(--ifm-color-primary-dark);
+  background-color: var(--ifm-color-primary-lightest);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.userNameLink:active {
+  transform: translateY(0);
 }
 
 /* Logout Button */
@@ -78,7 +102,8 @@
 
 /* Responsive: Hide user name on small screens */
 @media (max-width: 768px) {
-  .userName {
+  .userName,
+  .userNameLink {
     display: none;
   }
 

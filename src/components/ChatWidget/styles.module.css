@@ -27,6 +27,18 @@
   transform: scale(0.95);
 }
 
+/* Modal Backdrop (Click Outside to Close) */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 97;
+  animation: fadeIn 0.2s ease;
+}
+
 /* Chat Modal */
 .chatModal {
   position: fixed;
@@ -44,6 +56,18 @@
   z-index: 98;
   overflow: hidden;
   border: 1px solid var(--ifm-color-emphasis-300);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Header */
@@ -63,6 +87,48 @@
   gap: 8px;
   font-weight: 600;
   font-size: 16px;
+}
+
+.userBadge {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.9;
+  margin-left: 4px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deleteAllButton {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.deleteAllButton:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.deleteAllButton svg {
+  flex-shrink: 0;
+}
+
+.deleteAllText {
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .closeButton {
@@ -127,6 +193,12 @@
   font-size: 14px;
 }
 
+.guestNote {
+  margin-top: 12px !important;
+  color: var(--ifm-color-emphasis-500);
+  font-style: italic;
+}
+
 /* Messages */
 .userMessage {
   align-self: flex-end;
@@ -138,6 +210,13 @@
   max-width: 85%;
 }
 
+.messageWrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  position: relative;
+}
+
 .messageContent {
   padding: 12px 16px;
   border-radius: 12px;
@@ -145,6 +224,7 @@
   font-size: 14px;
   white-space: pre-wrap;
   word-wrap: break-word;
+  flex: 1;
 }
 
 .userMessage .messageContent {
@@ -157,6 +237,37 @@
   background: var(--ifm-color-emphasis-100);
   color: var(--ifm-font-color-base);
   border-bottom-left-radius: 4px;
+}
+
+/* Delete Message Button (Individual) */
+.deleteMessageButton {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  color: #dc3545;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  opacity: 0;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.userMessage:hover .deleteMessageButton {
+  opacity: 1;
+}
+
+.deleteMessageButton:hover {
+  background: rgba(220, 53, 69, 0.2);
+  border-color: rgba(220, 53, 69, 0.5);
+  transform: scale(1.05);
+}
+
+.deleteMessageButton:active {
+  transform: scale(0.95);
 }
 
 /* Citations */
@@ -338,6 +449,10 @@
   border-color: var(--ifm-color-emphasis-300);
 }
 
+[data-theme='dark'] .modalBackdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
 [data-theme='dark'] .botMessage .messageContent {
   background: var(--ifm-color-emphasis-200);
   color: var(--ifm-font-color-base);
@@ -380,6 +495,14 @@
   .userMessage,
   .botMessage {
     max-width: 90%;
+  }
+
+  .deleteAllText {
+    display: none; /* Hide "Clear All" text on mobile to save space */
+  }
+
+  .deleteMessageButton {
+    opacity: 1; /* Always visible on mobile (no hover state) */
   }
 }
 

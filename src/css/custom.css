@@ -518,3 +518,46 @@ html {
   background: rgba(10, 25, 47, 0.2) !important;
   border-color: #0a192f !important;
 }
+
+/* ============================================
+   UI/UX FIXES (Feature Request)
+   ============================================ */
+
+/* ERROR VISIBILITY FIX: Ensure error messages/dropdowns appear above navbar */
+/* Navbar z-index is 1000, so errors need to be higher */
+.alert,
+.notification,
+.toast,
+.dropdown,
+.error-container,
+[class*="error"],
+[class*="dropdown"],
+[class*="alert"] {
+  z-index: 10000 !important;
+}
+
+/* Profile page error/success banners */
+.errorBanner,
+.successBanner {
+  z-index: 10000 !important;
+}
+
+/* MOBILE SIDEBAR FIX: Hide annoying Docusaurus mobile secondary sidebar */
+/* The right-side mobile menu toggle and sidebar (hamburger menu for secondary nav) */
+@media (max-width: 996px) {
+  /* Hide the secondary sidebar toggle button */
+  .navbar__toggle[aria-label="Toggle secondary sidebar"],
+  .navbar-sidebar__brand button[aria-label="Toggle secondary sidebar"] {
+    display: none !important;
+  }
+
+  /* Hide the secondary sidebar itself */
+  .navbar-sidebar[role="dialog"]:not(:first-child) {
+    display: none !important;
+  }
+
+  /* Hide the mobile TOC (table of contents) sidebar if it's annoying */
+  .theme-doc-sidebar-container .menu--secondary {
+    display: none !important;
+  }
+}

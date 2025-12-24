@@ -54,19 +54,21 @@ const ChatWidget = () => {
           if (response.ok) {
             const data = await response.json();
 
-            // Map database format to UI format
+            // Map database format to UI format (with message IDs)
             const loadedMessages = data.data.map(chat => ([
               {
                 type: 'user',
                 content: chat.query,
-                timestamp: chat.created_at
+                timestamp: chat.created_at,
+                id: chat.id  // Store message ID for deletion
               },
               {
                 type: 'bot',
                 content: chat.response,
                 citations: chat.metadata?.citations || [],
                 confidence: chat.metadata?.confidence,
-                timestamp: chat.created_at
+                timestamp: chat.created_at,
+                id: chat.id  // Store same ID for the pair
               }
             ])).flat();
 
@@ -153,6 +155,39 @@ const ChatWidget = () => {
     setTimeout(() => {
       handleSendQuery(selectedText);
     }, 100);
+  };
+
+  // Delete a single message by ID (authenticated users only)
+  const handleDeleteMessage = async (messageId) => {
+    if (!messageId || !isAuthenticated) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      'Delete this message? This will remove both the question and answer.'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const response = await apiRequest(API_ENDPOINTS.CHAT.DELETE_MESSAGE(messageId), {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete message from server');
+      }
+
+      // Remove both user and bot messages with this ID from UI
+      setMessages(prev => prev.filter(msg => msg.id !== messageId));
+
+      console.log('Message deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+      alert('Failed to delete message. Please try again.');
+    }
   };
 
   // Delete all chat history
@@ -293,141 +328,171 @@ const ChatWidget = () => {
         </button>
       )}
 
-      {/* Chat Modal */}
+      {/* Chat Modal with Backdrop */}
       {isOpen && (
-        <div className={styles.chatModal}>
-          {/* Header */}
-          <div className={styles.chatHeader}>
-            <div className={styles.headerTitle}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-              </svg>
-              <span>AI Assistant</span>
-              {isAuthenticated && user && (
-                <span className={styles.userBadge}>({user.name})</span>
-              )}
-            </div>
-            <div className={styles.headerActions}>
-              {/* Delete History Button */}
-              {messages.length > 0 && (
+        <>
+          {/* Backdrop - Click to close */}
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setIsOpen(false)}
+            aria-label="Close chat"
+          ></div>
+
+          {/* Chat Window */}
+          <div className={styles.chatModal}>
+            {/* Header */}
+            <div className={styles.chatHeader}>
+              <div className={styles.headerTitle}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>AI Assistant</span>
+                {isAuthenticated && user && (
+                  <span className={styles.userBadge}>({user.name})</span>
+                )}
+              </div>
+              <div className={styles.headerActions}>
+                {/* Delete All History Button */}
+                {messages.length > 0 && (
+                  <button
+                    className={styles.deleteAllButton}
+                    onClick={handleDeleteHistory}
+                    aria-label="Delete all chat history"
+                    title="Delete all chat history"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      <line x1="10" y1="11" x2="10" y2="17"></line>
+                      <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                    <span className={styles.deleteAllText}>Clear All</span>
+                  </button>
+                )}
+                {/* Close Button */}
                 <button
-                  className={styles.deleteButton}
-                  onClick={handleDeleteHistory}
-                  aria-label="Delete chat history"
-                  title="Delete all chat history"
+                  className={styles.closeButton}
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close chat"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
                   </svg>
                 </button>
+              </div>
+            </div>
+
+            {/* Message List */}
+            <div className={styles.messageList} ref={messageListRef}>
+              {isLoadingHistory && (
+                <div className={styles.emptyState}>
+                  <p>Loading chat history...</p>
+                </div>
               )}
-              {/* Close Button */}
+
+              {!isLoadingHistory && messages.length === 0 && (
+                <div className={styles.emptyState}>
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  <p>Ask me anything about the Physical AI & Humanoid Robotics textbook!</p>
+                  {!isAuthenticated && (
+                    <p className={styles.guestNote}>
+                      <small>Guest mode: History saved in browser session</small>
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {messages.map((msg, idx) => (
+                <div key={idx} className={msg.type === 'user' ? styles.userMessage : styles.botMessage}>
+                  <div className={styles.messageWrapper}>
+                    <div className={styles.messageContent}>
+                      {msg.content}
+                    </div>
+
+                    {/* Delete button for individual user messages (authenticated users only) */}
+                    {msg.type === 'user' && isAuthenticated && msg.id && (
+                      <button
+                        className={styles.deleteMessageButton}
+                        onClick={() => handleDeleteMessage(msg.id)}
+                        aria-label="Delete this message"
+                        title="Delete this message"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          <line x1="10" y1="11" x2="10" y2="17"></line>
+                          <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Citations */}
+                  {msg.citations && msg.citations.length > 0 && (
+                    <div className={styles.citations}>
+                      <div className={styles.citationsLabel}>Sources:</div>
+                      {msg.citations.map((citation, citIdx) => (
+                        <button
+                          key={citIdx}
+                          className={styles.citationChip}
+                          onClick={() => handleCitationClick(citation.url)}
+                          title={`${citation.chapter_title} - ${citation.section}`}
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                          </svg>
+                          Chapter {citation.chapter}: {citation.section}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Loading indicator */}
+              {isLoading && (
+                <div className={styles.botMessage}>
+                  <div className={styles.loadingIndicator}>
+                    <span className={styles.dot}></span>
+                    <span className={styles.dot}></span>
+                    <span className={styles.dot}></span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Input Box */}
+            <div className={styles.inputBox}>
+              <textarea
+                ref={inputRef}
+                className={styles.input}
+                placeholder="Ask a question about the textbook..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={handleKeyPress}
+                rows={1}
+                disabled={isLoading}
+              />
               <button
-                className={styles.closeButton}
-                onClick={() => setIsOpen(false)}
-                aria-label="Close chat"
+                className={styles.sendButton}
+                onClick={() => handleSendQuery()}
+                disabled={!inputValue.trim() || isLoading}
+                aria-label="Send message"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                 </svg>
               </button>
             </div>
           </div>
-
-          {/* Message List */}
-          <div className={styles.messageList} ref={messageListRef}>
-            {isLoadingHistory && (
-              <div className={styles.emptyState}>
-                <p>Loading chat history...</p>
-              </div>
-            )}
-
-            {!isLoadingHistory && messages.length === 0 && (
-              <div className={styles.emptyState}>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                <p>Ask me anything about the Physical AI & Humanoid Robotics textbook!</p>
-                {!isAuthenticated && (
-                  <p className={styles.guestNote}>
-                    <small>Guest mode: History saved in browser session</small>
-                  </p>
-                )}
-              </div>
-            )}
-
-            {messages.map((msg, idx) => (
-              <div key={idx} className={msg.type === 'user' ? styles.userMessage : styles.botMessage}>
-                <div className={styles.messageContent}>
-                  {msg.content}
-                </div>
-
-                {/* Citations */}
-                {msg.citations && msg.citations.length > 0 && (
-                  <div className={styles.citations}>
-                    <div className={styles.citationsLabel}>Sources:</div>
-                    {msg.citations.map((citation, citIdx) => (
-                      <button
-                        key={citIdx}
-                        className={styles.citationChip}
-                        onClick={() => handleCitationClick(citation.url)}
-                        title={`${citation.chapter_title} - ${citation.section}`}
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                        Chapter {citation.chapter}: {citation.section}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {/* Loading indicator */}
-            {isLoading && (
-              <div className={styles.botMessage}>
-                <div className={styles.loadingIndicator}>
-                  <span className={styles.dot}></span>
-                  <span className={styles.dot}></span>
-                  <span className={styles.dot}></span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Input Box */}
-          <div className={styles.inputBox}>
-            <textarea
-              ref={inputRef}
-              className={styles.input}
-              placeholder="Ask a question about the textbook..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              rows={1}
-              disabled={isLoading}
-            />
-            <button
-              className={styles.sendButton}
-              onClick={() => handleSendQuery()}
-              disabled={!inputValue.trim() || isLoading}
-              aria-label="Send message"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
-            </button>
-          </div>
-        </div>
+        </>
       )}
 
       {/* Select-to-Ask Tooltip */}
