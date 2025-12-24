@@ -11,12 +11,24 @@ async def chat(request: ChatRequest):
     """
     Process user query via ChatService.
     Final URL: POST /api/chat
+
+    DEBUG MODE: Exposes real errors instead of generic messages.
     """
     try:
-        # Delegate purely to the service layer
-        # No manual embedding checks here
-        return await chat_service.process_query(request.query)
+        response = await chat_service.process_query(request.query)
+
+        # DEBUG: If service returned an error response, expose it
+        if response.status == "error":
+            error_msg = response.answer
+            print(f"🐛 CHAT SERVICE ERROR DETECTED: {error_msg}")
+            raise HTTPException(status_code=500, detail=f"Chat Service Error: {error_msg}")
+
+        return response
+    except HTTPException:
+        # Re-raise HTTP exceptions (from the error check above)
+        raise
     except Exception as e:
         import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Route Error: {str(e)}")
+        full_trace = traceback.format_exc()
+        print(f"🐛 ROUTE EXCEPTION:\n{full_trace}")
+        raise HTTPException(status_code=500, detail=f"Route Error: {type(e).__name__}: {str(e)}")

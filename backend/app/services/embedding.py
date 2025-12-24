@@ -35,7 +35,14 @@ async def get_embedding(text: str):
             # Fallback: return zero vector if extraction fails
             return [0.0] * 768
 
+    except httpx.HTTPStatusError as e:
+        # HTTP error from Gemini API (403, 429, 404, etc.)
+        error_body = e.response.text
+        print(f"🐛 GEMINI EMBEDDING API HTTP ERROR: {e.response.status_code} - {error_body}")
+        raise Exception(f"Gemini Embedding API returned {e.response.status_code}: {error_body}")
     except Exception as e:
-        print(f"Error generating embedding: {e}")
-        # Return zero vector on error to maintain compatibility
-        return [0.0] * 768
+        # Other errors (network, timeout, missing API key, etc.)
+        import traceback
+        full_trace = traceback.format_exc()
+        print(f"🐛 EMBEDDING SERVICE ERROR:\n{full_trace}")
+        raise Exception(f"Embedding Error ({type(e).__name__}): {str(e)}")

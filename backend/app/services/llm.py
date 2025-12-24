@@ -43,9 +43,17 @@ class LLMService:
 
                 return "I apologize, but I couldn't generate a response. Please try again."
 
+        except httpx.HTTPStatusError as e:
+            # HTTP error from Gemini API (403, 429, etc.)
+            error_body = e.response.text
+            print(f"🐛 GEMINI API HTTP ERROR: {e.response.status_code} - {error_body}")
+            raise Exception(f"Gemini API returned {e.response.status_code}: {error_body}")
         except Exception as e:
-            print(f"Error generating LLM response: {e}")
-            return "I apologize, but I encountered an error connecting to the AI model. Please check your API configuration."
+            # Other errors (network, timeout, etc.)
+            import traceback
+            full_trace = traceback.format_exc()
+            print(f"🐛 LLM SERVICE ERROR:\n{full_trace}")
+            raise Exception(f"LLM Error ({type(e).__name__}): {str(e)}")
 
 # Create a singleton instance
 llm_service = LLMService()
