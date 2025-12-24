@@ -14,6 +14,7 @@ import Layout from '@theme/Layout';
 import { useHistory } from '@docusaurus/router';
 import { useAuth } from '@site/src/components/AuthProvider';
 import { apiRequest, API_ENDPOINTS } from '@site/src/utils/api';
+import ConfirmationModal from '@site/src/components/UI/ConfirmationModal';
 import styles from './profile.module.css';
 
 export default function ProfilePage() {
@@ -27,6 +28,16 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Modal state
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    confirmText: 'Confirm',
+    isDanger: false
+  });
 
   // Auth guard: Redirect to signin if not authenticated
   useEffect(() => {
@@ -107,65 +118,72 @@ export default function ProfilePage() {
   /**
    * Handle account deletion
    */
-  const handleDeleteAccount = async () => {
-    // Double confirmation
-    const confirmed = window.confirm(
-      '⚠️ WARNING: This action is IRREVERSIBLE!\n\n' +
-      'Deleting your account will permanently remove:\n' +
-      '- Your profile information\n' +
-      '- All chat history\n' +
-      '- All associated data\n\n' +
-      'Are you absolutely sure you want to proceed?'
-    );
+  const handleDeleteAccount = () => {
+    // Show initial warning modal
+    setModalConfig({
+      isOpen: true,
+      title: '⚠️ Delete Account Warning',
+      message:
+        'WARNING: This action is IRREVERSIBLE!\n\n' +
+        'Deleting your account will permanently remove:\n' +
+        '• Your profile information\n' +
+        '• All chat history\n' +
+        '• All associated data\n\n' +
+        'Are you absolutely sure you want to proceed?',
+      confirmText: 'Yes, Continue',
+      isDanger: true,
+      onConfirm: () => {
+        // Show final confirmation modal
+        setModalConfig({
+          isOpen: true,
+          title: 'Final Confirmation',
+          message: 'This is your last chance to cancel.\n\nClick "Delete Forever" to permanently delete your account.',
+          confirmText: 'Delete Forever',
+          isDanger: true,
+          onConfirm: async () => {
+            // Close modal and proceed with deletion
+            setModalConfig(prev => ({ ...prev, isOpen: false }));
+            setLoading(true);
+            setError('');
 
-    if (!confirmed) {
-      return;
-    }
+            try {
+              const response = await apiRequest(API_ENDPOINTS.AUTH.DELETE_ACCOUNT, {
+                method: 'DELETE',
+              });
 
-    // Second confirmation
-    const doubleConfirmed = window.confirm(
-      'FINAL CONFIRMATION:\n\n' +
-      'Type DELETE to confirm account deletion in the next prompt.'
-    );
+              if (!response.ok) {
+                const errorData = await response.json();
+                setError(errorData.detail || 'Failed to delete account');
+                setLoading(false);
+                return;
+              }
 
-    if (!doubleConfirmed) {
-      return;
-    }
+              const result = await response.json();
+              console.log('Account deleted:', result);
 
-    const userInput = window.prompt('Type DELETE to confirm:');
-    if (userInput !== 'DELETE') {
-      alert('Account deletion cancelled.');
-      return;
-    }
+              // Show success modal, then logout and redirect
+              setModalConfig({
+                isOpen: true,
+                title: 'Account Deleted',
+                message: 'Your account has been deleted successfully.',
+                confirmText: 'OK',
+                isDanger: false,
+                onConfirm: () => {
+                  setModalConfig(prev => ({ ...prev, isOpen: false }));
+                  logout();
+                  history.push('/');
+                }
+              });
 
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await apiRequest(API_ENDPOINTS.AUTH.DELETE_ACCOUNT, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.detail || 'Failed to delete account');
-        setLoading(false);
-        return;
+            } catch (err) {
+              console.error('Delete account error:', err);
+              setError('Network error. Please try again.');
+              setLoading(false);
+            }
+          }
+        });
       }
-
-      const result = await response.json();
-      console.log('Account deleted:', result);
-
-      // Logout and redirect to home
-      logout();
-      alert('Your account has been deleted successfully.');
-      history.push('/');
-
-    } catch (err) {
-      console.error('Delete account error:', err);
-      setError('Network error. Please try again.');
-      setLoading(false);
-    }
+    });
   };
 
   // Show loading state while checking authentication
@@ -316,6 +334,18 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={modalConfig.isOpen}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        onConfirm={modalConfig.onConfirm}
+        onCancel={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+        confirmText={modalConfig.confirmText}
+        cancelText="Cancel"
+        isDanger={modalConfig.isDanger}
+      />
     </Layout>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import styles from './styles.module.css';
 import { useAuth } from '@site/src/components/AuthProvider';
 import { apiRequest, API_ENDPOINTS, API_BASE_URL } from '@site/src/utils/api';
+import ConfirmationModal from '@site/src/components/UI/ConfirmationModal';
 
 const ChatWidget = () => {
   // Auth context
@@ -20,6 +21,16 @@ const ChatWidget = () => {
   const [selectedText, setSelectedText] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
+  // Modal State
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    confirmText: 'Confirm',
+    isDanger: false
+  });
 
   // Refs
   const messageListRef = useRef(null);
@@ -178,82 +189,108 @@ const ChatWidget = () => {
   };
 
   // Delete a single message by ID
-  const handleDeleteMessage = async (messageId) => {
+  const handleDeleteMessage = (messageId) => {
     if (!messageId) {
       return;
     }
 
-    const confirmed = window.confirm(
-      'Delete this message? This will remove both the question and answer.'
-    );
+    // Show custom confirmation modal
+    setModalConfig({
+      isOpen: true,
+      title: 'Delete Message',
+      message: 'Delete this message? This will remove both the question and answer.',
+      confirmText: 'Delete',
+      isDanger: true,
+      onConfirm: async () => {
+        // Close modal first for instant feedback
+        setModalConfig(prev => ({ ...prev, isOpen: false }));
 
-    if (!confirmed) {
-      return;
-    }
+        try {
+          // Check if this is a real database ID or a temporary ID
+          const isRealId = isRealDatabaseId(messageId);
 
-    try {
-      // Check if this is a real database ID or a temporary ID
-      const isRealId = isRealDatabaseId(messageId);
+          if (isAuthenticated && isRealId) {
+            // USER with real DB ID: Delete from database
+            const response = await apiRequest(API_ENDPOINTS.CHAT.DELETE_MESSAGE(messageId), {
+              method: 'DELETE',
+            });
 
-      if (isAuthenticated && isRealId) {
-        // USER with real DB ID: Delete from database
-        const response = await apiRequest(API_ENDPOINTS.CHAT.DELETE_MESSAGE(messageId), {
-          method: 'DELETE',
-        });
+            if (!response.ok) {
+              throw new Error('Failed to delete message from server');
+            }
 
-        if (!response.ok) {
-          throw new Error('Failed to delete message from server');
+            console.log('Message deleted from database');
+          } else {
+            // GUEST or temp ID: Just remove from state (sessionStorage auto-saves via useEffect)
+            console.log('Message removed from state (temp ID or guest mode)');
+          }
+
+          // Remove both user and bot messages with this ID from UI
+          setMessages(prev => prev.filter(msg => msg.id !== messageId));
+
+        } catch (error) {
+          console.error('Failed to delete message:', error);
+          // Show error modal
+          setModalConfig({
+            isOpen: true,
+            title: 'Error',
+            message: 'Failed to delete message. Please try again.',
+            confirmText: 'OK',
+            isDanger: false,
+            onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+          });
         }
-
-        console.log('Message deleted from database');
-      } else {
-        // GUEST or temp ID: Just remove from state (sessionStorage auto-saves via useEffect)
-        console.log('Message removed from state (temp ID or guest mode)');
       }
-
-      // Remove both user and bot messages with this ID from UI
-      setMessages(prev => prev.filter(msg => msg.id !== messageId));
-
-    } catch (error) {
-      console.error('Failed to delete message:', error);
-      alert('Failed to delete message. Please try again.');
-    }
+    });
   };
 
   // Delete all chat history
-  const handleDeleteHistory = async () => {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete all chat history? This action cannot be undone.'
-    );
+  const handleDeleteHistory = () => {
+    // Show custom confirmation modal
+    setModalConfig({
+      isOpen: true,
+      title: 'Delete All Chat History',
+      message: 'Are you sure you want to delete all chat history? This action cannot be undone.',
+      confirmText: 'Delete All',
+      isDanger: true,
+      onConfirm: async () => {
+        // Close modal first for instant feedback
+        setModalConfig(prev => ({ ...prev, isOpen: false }));
 
-    if (!confirmed) {
-      return;
-    }
+        try {
+          if (isAuthenticated) {
+            // USER: Delete from database
+            const response = await apiRequest(API_ENDPOINTS.CHAT.DELETE_HISTORY, {
+              method: 'DELETE',
+            });
 
-    try {
-      if (isAuthenticated) {
-        // USER: Delete from database
-        const response = await apiRequest(API_ENDPOINTS.CHAT.DELETE_HISTORY, {
-          method: 'DELETE',
-        });
+            if (!response.ok) {
+              throw new Error('Failed to delete chat history from server');
+            }
 
-        if (!response.ok) {
-          throw new Error('Failed to delete chat history from server');
+            console.log('Chat history deleted from database');
+          } else {
+            // GUEST: Delete from sessionStorage
+            sessionStorage.removeItem('chat_history');
+            console.log('Chat history deleted from sessionStorage');
+          }
+
+          // Clear UI
+          setMessages([]);
+        } catch (error) {
+          console.error('Failed to delete chat history:', error);
+          // Show error modal
+          setModalConfig({
+            isOpen: true,
+            title: 'Error',
+            message: 'Failed to delete chat history. Please try again.',
+            confirmText: 'OK',
+            isDanger: false,
+            onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+          });
         }
-
-        console.log('Chat history deleted from database');
-      } else {
-        // GUEST: Delete from sessionStorage
-        sessionStorage.removeItem('chat_history');
-        console.log('Chat history deleted from sessionStorage');
       }
-
-      // Clear UI
-      setMessages([]);
-    } catch (error) {
-      console.error('Failed to delete chat history:', error);
-      alert('Failed to delete chat history. Please try again.');
-    }
+    });
   };
 
   // Send query to backend API
@@ -554,6 +591,18 @@ const ChatWidget = () => {
           </button>
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={modalConfig.isOpen}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        onConfirm={modalConfig.onConfirm}
+        onCancel={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+        confirmText={modalConfig.confirmText}
+        cancelText="Cancel"
+        isDanger={modalConfig.isDanger}
+      />
     </>
   );
 };
