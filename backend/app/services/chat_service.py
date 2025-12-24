@@ -1,12 +1,15 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import time
+import json
+from uuid import UUID
 from backend.app.services.embedding import get_embedding
 from backend.app.services.qdrant import qdrant_service
 from backend.app.services.llm import llm_service
 from backend.app.models.chat import ChatResponse, Citation
+from backend.app.core.database import db_manager
 
 class ChatService:
-    async def process_query(self, query: str) -> ChatResponse:
+    async def process_query(self, query: str, user_id: Optional[UUID] = None) -> ChatResponse:
         """
         Process a user query through the RAG pipeline.
         """
@@ -53,7 +56,42 @@ class ChatService:
 
             answer = await llm_service.get_response(query, system_prompt=system_prompt)
 
-            # 5. Response
+            # 5. Save to database if user is logged in
+            if user_id and db_manager.pool:
+                try:
+                    # Prepare metadata (citations, confidence, etc.)
+                    metadata = {
+                        "citations": [
+                            {
+                                "chapter": c.chapter,
+                                "chapter_title": c.chapter_title,
+                                "section": c.section,
+                                "similarity_score": c.similarity_score
+                            }
+                            for c in citations
+                        ],
+                        "confidence": citations[0].similarity_score if citations else 0.0,
+                        "retrieved_chunks": len(citations),
+                        "model": "gemini-1.5-flash-001"
+                    }
+
+                    # Insert chat into database
+                    async with db_manager.pool.acquire() as conn:
+                        await conn.execute(
+                            """
+                            INSERT INTO chats (user_id, query, response, metadata)
+                            VALUES ($1, $2, $3, $4)
+                            """,
+                            user_id,
+                            query,
+                            answer,
+                            json.dumps(metadata)
+                        )
+                except Exception as db_error:
+                    # Don't fail the request if DB save fails, just log it
+                    print(f"[WARNING] Failed to save chat to database: {db_error}")
+
+            # 6. Response
             return ChatResponse(
                 status="success",
                 answer=answer,
@@ -80,5 +118,50 @@ class ChatService:
                 response_time_ms=0,
                 model="gemini-1.5-flash-001"
             )
+
+    async def get_user_chat_history(self, user_id: UUID, limit: int = 50) -> List[Dict[str, Any]]:
+        """
+        Fetch chat history for a specific user.
+
+        Args:
+            user_id: User's UUID
+            limit: Maximum number of messages to retrieve (default: 50)
+
+        Returns:
+            List of chat messages sorted by created_at ASC (oldest first)
+        """
+        if not db_manager.pool:
+            raise Exception("Database pool not initialized")
+
+        try:
+            async with db_manager.pool.acquire() as conn:
+                rows = await conn.fetch(
+                    """
+                    SELECT id, query, response, metadata, created_at
+                    FROM chats
+                    WHERE user_id = $1
+                    ORDER BY created_at ASC
+                    LIMIT $2
+                    """,
+                    user_id,
+                    limit
+                )
+
+            # Convert rows to list of dictionaries
+            chat_history = []
+            for row in rows:
+                chat_history.append({
+                    "id": str(row['id']),
+                    "query": row['query'],
+                    "response": row['response'],
+                    "metadata": row['metadata'],  # Already parsed as dict by asyncpg
+                    "created_at": row['created_at'].isoformat() if row['created_at'] else None
+                })
+
+            return chat_history
+
+        except Exception as e:
+            print(f"[ERROR] Failed to fetch chat history: {e}")
+            raise
 
 chat_service = ChatService()

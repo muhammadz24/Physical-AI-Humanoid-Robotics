@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Cookie
+from typing import Optional
 from uuid import UUID
 from backend.app.models.chat import ChatRequest, ChatResponse
 from backend.app.services.chat_service import chat_service
@@ -12,15 +13,34 @@ router = APIRouter()
 # FIXED: Empty string route to match prefix exactly
 # Main.py sets prefix="/api/chat", route="" = /api/chat (no trailing slash)
 @router.post("", response_model=ChatResponse)
-async def chat(request: ChatRequest):
+async def chat(
+    request: ChatRequest,
+    access_token: Optional[str] = Cookie(None)
+):
     """
     Process user query via ChatService.
     Final URL: POST /api/chat
 
+    Hybrid Storage:
+    - If user is logged in (has valid JWT): Save to database
+    - If guest (no JWT): Frontend handles sessionStorage
+
     DEBUG MODE: Exposes real errors instead of generic messages.
     """
+    # Try to get current user (optional - don't fail if not authenticated)
+    user_id = None
+    if access_token:
+        try:
+            # Attempt to get current user (for logged-in users)
+            current_user = await get_current_user(access_token)
+            user_id = current_user['id']
+        except HTTPException:
+            # User not authenticated - treat as guest
+            pass
+
     try:
-        response = await chat_service.process_query(request.query)
+        # Process query with optional user_id (saves to DB if logged in)
+        response = await chat_service.process_query(request.query, user_id=user_id)
 
         # DEBUG: If service returned an error response, expose it
         if response.status == "error":
@@ -42,6 +62,68 @@ async def chat(request: ChatRequest):
 # ============================================================================
 # CHAT HISTORY MANAGEMENT ENDPOINTS
 # ============================================================================
+
+@router.get("/history", status_code=200)
+async def get_chat_history(
+    current_user: dict = Depends(get_current_user),
+    limit: int = 50
+):
+    """
+    Get chat history for the current authenticated user.
+
+    Endpoint: GET /api/chat/history?limit=50
+
+    Query Parameters:
+        - limit: Maximum number of messages to retrieve (default: 50, max: 100)
+
+    Requires:
+        - Valid JWT token in httpOnly cookie
+
+    Returns:
+        JSON: {
+            "status": "success",
+            "data": [
+                {
+                    "id": "uuid",
+                    "query": "user question",
+                    "response": "ai answer",
+                    "metadata": {...},
+                    "created_at": "ISO timestamp"
+                },
+                ...
+            ],
+            "count": N
+        }
+
+    Raises:
+        401 Unauthorized: If not authenticated
+    """
+    # Validate limit
+    if limit > 100:
+        limit = 100
+    if limit < 1:
+        limit = 50
+
+    try:
+        # Fetch chat history from database
+        chat_history = await chat_service.get_user_chat_history(
+            user_id=current_user['id'],
+            limit=limit
+        )
+
+        return {
+            "status": "success",
+            "data": chat_history,
+            "count": len(chat_history)
+        }
+
+    except Exception as e:
+        print(f"[ERROR] Get chat history error: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to retrieve chat history. Please try again later."
+        )
+
 
 @router.delete("/history", status_code=200)
 async def delete_all_chat_history(current_user: dict = Depends(get_current_user)):
