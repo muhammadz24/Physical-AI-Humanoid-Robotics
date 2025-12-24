@@ -15,7 +15,9 @@
 
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
+import { useHistory } from '@docusaurus/router';
 import { apiRequest, API_ENDPOINTS } from '@site/src/utils/api';
+import { useAuth } from '@site/src/components/AuthProvider';
 import styles from './signup.module.css';
 
 export default function SignupPage() {
@@ -32,6 +34,10 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
+
+  // Auth context and router
+  const { login } = useAuth();
+  const history = useHistory();
 
   /**
    * Handle input changes for all form fields.
@@ -124,8 +130,11 @@ export default function SignupPage() {
       const userData = await response.json();
       console.log('Signup successful:', userData);
 
-      // Redirect to homepage
-      window.location.href = '/';
+      // Auto-login: Set user in auth context and persist to localStorage
+      login(userData);
+
+      // Redirect to homepage (using router to preserve state)
+      history.push('/');
 
     } catch (err) {
       console.error('Signup error:', err);
