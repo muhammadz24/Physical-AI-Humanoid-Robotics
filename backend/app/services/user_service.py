@@ -139,3 +139,65 @@ async def get_user_experience(user_id: UUID, db_pool: asyncpg.Pool) -> Optional[
         software_experience=row['software_experience'],
         hardware_experience=row['hardware_experience']
     )
+
+
+async def update_user_name(user_id: UUID, name: str, db_pool: asyncpg.Pool) -> str:
+    """
+    Update a user's name.
+
+    Args:
+        user_id: User's UUID
+        name: New name (already validated, trimmed)
+        db_pool: Database connection pool
+
+    Returns:
+        Updated name string
+
+    Raises:
+        Exception: If update fails
+    """
+    query = """
+        UPDATE users
+        SET name = $1
+        WHERE id = $2
+        RETURNING name
+    """
+
+    async with db_pool.acquire() as conn:
+        row = await conn.fetchrow(query, name, user_id)
+
+    if row is None:
+        raise Exception("User not found or update failed")
+
+    return row['name']
+
+
+async def delete_user(user_id: UUID, db_pool: asyncpg.Pool) -> None:
+    """
+    Delete a user and all associated data (cascading delete).
+
+    CRITICAL: This is a hard delete operation. Removes:
+    - User account from users table
+    - All chat messages (if chats table has ON DELETE CASCADE)
+
+    Args:
+        user_id: User's UUID
+        db_pool: Database connection pool
+
+    Returns:
+        None
+
+    Raises:
+        Exception: If deletion fails
+    """
+    query = """
+        DELETE FROM users
+        WHERE id = $1
+        RETURNING id
+    """
+
+    async with db_pool.acquire() as conn:
+        row = await conn.fetchrow(query, user_id)
+
+    if row is None:
+        raise Exception("User not found or deletion failed")
