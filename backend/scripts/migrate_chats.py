@@ -23,6 +23,17 @@ import asyncpg
 import os
 from pathlib import Path
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    # Load from backend/.env
+    env_path = Path(__file__).parent.parent / '.env'
+    load_dotenv(dotenv_path=env_path)
+    print(f"[INFO] Loaded environment from {env_path}")
+except ImportError:
+    print("[WARNING] python-dotenv not installed. Using system environment variables only.")
+    print("          Install with: pip install python-dotenv")
+
 
 async def run_migration():
     """
@@ -33,36 +44,36 @@ async def run_migration():
     # Get database URL from environment
     database_url = os.getenv("DATABASE_URL")
     if not database_url:
-        print("❌ ERROR: DATABASE_URL environment variable not set")
+        print("[ERROR] DATABASE_URL environment variable not set")
         print("Set it in your .env file or export it:")
         print('  export DATABASE_URL="postgresql://user:pass@host.neon.tech/db?sslmode=require"')
         return False
 
-    print("🔄 Starting chats table migration...")
-    print(f"📍 Database: {database_url.split('@')[1] if '@' in database_url else 'hidden'}")
+    print("[INFO] Starting chats table migration...")
+    print(f"[INFO] Database: {database_url.split('@')[1] if '@' in database_url else 'hidden'}")
 
     try:
         # Read SQL schema file
         schema_file = Path(__file__).parent / "schema_chats.sql"
         if not schema_file.exists():
-            print(f"❌ ERROR: Schema file not found at {schema_file}")
+            print(f"[ERROR] Schema file not found at {schema_file}")
             return False
 
         with open(schema_file, 'r', encoding='utf-8') as f:
             sql_schema = f.read()
 
-        print(f"📄 Loaded SQL schema from {schema_file.name}")
+        print(f"[INFO] Loaded SQL schema from {schema_file.name}")
 
         # Connect to database
-        print("🔌 Connecting to Neon Postgres...")
+        print("[INFO] Connecting to Neon Postgres...")
         conn = await asyncpg.connect(dsn=database_url, ssl='require')
 
         # Execute migration
-        print("⚙️  Executing migration...")
+        print("[INFO] Executing migration...")
         await conn.execute(sql_schema)
 
         # Verify table creation
-        print("✅ Verifying migration...")
+        print("[INFO] Verifying migration...")
         table_exists = await conn.fetchval("""
             SELECT EXISTS (
                 SELECT FROM information_schema.tables
@@ -84,33 +95,33 @@ async def run_migration():
                 );
             """)
 
-            print("✅ MIGRATION SUCCESSFUL!")
+            print("[SUCCESS] MIGRATION SUCCESSFUL!")
             print(f"   - Table 'chats' created")
             print(f"   - Indexes created: {index_count}")
-            print(f"   - Foreign key constraint: {'✅ YES' if fk_exists else '❌ NO'}")
-            print(f"   - Cascading delete enabled: {'✅ YES' if fk_exists else '❌ NO'}")
+            print(f"   - Foreign key constraint: {'YES' if fk_exists else 'NO'}")
+            print(f"   - Cascading delete enabled: {'YES' if fk_exists else 'NO'}")
         else:
-            print("❌ ERROR: Table 'chats' was not created")
+            print("[ERROR] Table 'chats' was not created")
             return False
 
         # Close connection
         await conn.close()
-        print("🔌 Database connection closed")
+        print("[INFO] Database connection closed")
 
         return True
 
     except asyncpg.exceptions.UndefinedTableError as e:
-        print("❌ ERROR: 'users' table does not exist!")
+        print("[ERROR] 'users' table does not exist!")
         print("   Run the users table migration first.")
         print(f"   Details: {e}")
         return False
 
     except asyncpg.exceptions.PostgresError as e:
-        print(f"❌ DATABASE ERROR: {e}")
+        print(f"[ERROR] DATABASE ERROR: {e}")
         return False
 
     except Exception as e:
-        print(f"❌ UNEXPECTED ERROR: {e}")
+        print(f"[ERROR] UNEXPECTED ERROR: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -125,30 +136,30 @@ async def rollback_migration():
     """
     database_url = os.getenv("DATABASE_URL")
     if not database_url:
-        print("❌ ERROR: DATABASE_URL environment variable not set")
+        print("[ERROR] DATABASE_URL environment variable not set")
         return False
 
-    print("⚠️  WARNING: This will DELETE the 'chats' table and ALL data!")
+    print("[WARNING] This will DELETE the 'chats' table and ALL data!")
     confirmation = input("Type 'DELETE CHATS TABLE' to confirm: ")
 
     if confirmation != "DELETE CHATS TABLE":
-        print("❌ Rollback cancelled")
+        print("[INFO] Rollback cancelled")
         return False
 
     try:
-        print("🔌 Connecting to database...")
+        print("[INFO] Connecting to database...")
         conn = await asyncpg.connect(dsn=database_url, ssl='require')
 
-        print("🗑️  Dropping 'chats' table...")
+        print("[INFO] Dropping 'chats' table...")
         await conn.execute("DROP TABLE IF EXISTS chats CASCADE;")
 
-        print("✅ Table 'chats' dropped successfully")
+        print("[SUCCESS] Table 'chats' dropped successfully")
 
         await conn.close()
         return True
 
     except Exception as e:
-        print(f"❌ ERROR: {e}")
+        print(f"[ERROR] {e}")
         return False
 
 
@@ -157,7 +168,7 @@ if __name__ == "__main__":
 
     # Check for rollback flag
     if len(sys.argv) > 1 and sys.argv[1] == "--rollback":
-        print("🔄 ROLLBACK MODE")
+        print("[INFO] ROLLBACK MODE")
         success = asyncio.run(rollback_migration())
     else:
         # Default: Run migration

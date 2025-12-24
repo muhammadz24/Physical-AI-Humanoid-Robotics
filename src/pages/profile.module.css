@@ -1,0 +1,256 @@
+/**
+ * Profile Page Styles
+ *
+ * Clean, modern design for user profile dashboard
+ */
+
+.profilePage {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: calc(100vh - 60px);
+  padding: 2rem 1rem;
+  background: var(--ifm-background-color);
+}
+
+.loadingContainer {
+  text-align: center;
+  padding: 4rem 0;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.profileContainer {
+  width: 100%;
+  max-width: 700px;
+}
+
+.profileContainer h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: var(--ifm-heading-color);
+}
+
+/* Error/Success Banners */
+.errorBanner {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  color: #c33;
+  font-size: 0.95rem;
+}
+
+.successBanner {
+  background-color: #efe;
+  border: 1px solid #cfc;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  color: #383;
+  font-size: 0.95rem;
+}
+
+/* Profile Card */
+.profileCard {
+  background: var(--ifm-card-background-color);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profileCard h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--ifm-heading-color);
+  border-bottom: 2px solid var(--ifm-color-primary);
+  padding-bottom: 0.5rem;
+}
+
+/* Profile Fields */
+.profileField {
+  margin-bottom: 1.5rem;
+}
+
+.profileField label {
+  display: block;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fieldValue {
+  font-size: 1.1rem;
+  color: var(--ifm-color-emphasis-800);
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.immutableLabel {
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-600);
+  font-style: italic;
+  margin-left: 0.5rem;
+}
+
+.editInput {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  transition: border-color 0.2s;
+}
+
+.editInput:focus {
+  outline: none;
+  border-color: var(--ifm-color-primary);
+}
+
+.editInput:disabled {
+  background-color: var(--ifm-color-emphasis-100);
+  cursor: not-allowed;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.editButton,
+.saveButton,
+.cancelButton {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editButton {
+  background-color: var(--ifm-color-primary);
+  color: white;
+}
+
+.editButton:hover:not(:disabled) {
+  background-color: var(--ifm-color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.saveButton {
+  background-color: #28a745;
+  color: white;
+}
+
+.saveButton:hover:not(:disabled) {
+  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.cancelButton {
+  background-color: var(--ifm-color-emphasis-300);
+  color: var(--ifm-font-color-base);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background-color: var(--ifm-color-emphasis-400);
+}
+
+.editButton:disabled,
+.saveButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Danger Zone */
+.dangerZone {
+  background: #fff5f5;
+  border: 2px solid #feb2b2;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+[data-theme='dark'] .dangerZone {
+  background: #2d1b1b;
+  border-color: #c53030;
+}
+
+.dangerZone h2 {
+  font-size: 1.3rem;
+  color: #c53030;
+  margin-bottom: 1rem;
+}
+
+.dangerWarning {
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.deleteButton {
+  background-color: #dc3545;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.deleteButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profilePage {
+    padding: 1rem 0.5rem;
+  }
+
+  .profileContainer h1 {
+    font-size: 2rem;
+  }
+
+  .profileCard,
+  .dangerZone {
+    padding: 1.5rem;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .editButton,
+  .saveButton,
+  .cancelButton,
+  .deleteButton {
+    width: 100%;
+  }
+}

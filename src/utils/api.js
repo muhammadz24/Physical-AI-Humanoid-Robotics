@@ -61,9 +61,14 @@ export const API_ENDPOINTS = {
     SIGNUP: '/api/auth/signup',
     SIGNIN: '/api/auth/signin',
     SIGNOUT: '/api/auth/signout',
+    ME: '/api/auth/me',
+    UPDATE: '/api/auth/update',
+    DELETE_ACCOUNT: '/api/auth/account',
   },
   CHAT: {
     SEND_MESSAGE: '/api/chat',
+    DELETE_HISTORY: '/api/chat/history',
+    DELETE_MESSAGE: (messageId) => `/api/chat/${messageId}`,
   },
   PERSONALIZE: {
     PERSONALIZE_CHAPTER: '/api/personalize',
