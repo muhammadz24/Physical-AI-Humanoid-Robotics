@@ -10,7 +10,9 @@ class LLMService:
         if not self.api_key:
             raise ValueError("CRITICAL: GEMINI_API_KEY is missing in environment variables")
 
-        self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={self.api_key}"
+        # Use model from settings (defaults to gemini-1.5-flash-001)
+        self.model = settings.gemini_model
+        self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
 
     async def get_response(self, prompt: str, system_prompt: str = "You are a helpful AI assistant for humanoid robotics."):
         """Generate a response using Google Gemini via direct HTTP."""
