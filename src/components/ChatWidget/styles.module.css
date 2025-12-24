@@ -473,6 +473,13 @@
   background: var(--ifm-color-primary-dark);
 }
 
+/* Mobile Touch Support - Always show delete buttons on touch devices */
+@media (hover: none) {
+  .deleteMessageButton {
+    opacity: 1 !important; /* Always visible on touch devices (no hover state) */
+  }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .chatModal {

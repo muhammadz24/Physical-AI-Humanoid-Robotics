@@ -542,22 +542,35 @@ html {
   z-index: 10000 !important;
 }
 
-/* MOBILE SIDEBAR FIX: Hide annoying Docusaurus mobile secondary sidebar */
+/* MOBILE SIDEBAR FIX: Aggressively hide Docusaurus mobile secondary sidebar */
 /* The right-side mobile menu toggle and sidebar (hamburger menu for secondary nav) */
 @media (max-width: 996px) {
-  /* Hide the secondary sidebar toggle button */
+  /* AGGRESSIVE: Hide all possible secondary sidebar toggles */
+  .navbar__toggle--secondary,
+  button[aria-label="Toggle secondary sidebar"],
   .navbar__toggle[aria-label="Toggle secondary sidebar"],
-  .navbar-sidebar__brand button[aria-label="Toggle secondary sidebar"] {
+  .navbar-sidebar__brand button[aria-label="Toggle secondary sidebar"],
+  .navbar-sidebar__brand button[aria-label="Close navigation bar"] + button {
     display: none !important;
+    visibility: hidden !important;
   }
 
   /* Hide the secondary sidebar itself */
-  .navbar-sidebar[role="dialog"]:not(:first-child) {
+  .navbar-sidebar[role="dialog"]:not(:first-child),
+  .navbar-sidebar--secondary {
     display: none !important;
+    visibility: hidden !important;
   }
 
-  /* Hide the mobile TOC (table of contents) sidebar if it's annoying */
-  .theme-doc-sidebar-container .menu--secondary {
+  /* Hide the mobile TOC (table of contents) sidebar */
+  .theme-doc-sidebar-container .menu--secondary,
+  .theme-doc-toc-mobile {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Nuclear option: Hide any secondary toggles in navbar */
+  .navbar__items--right .navbar__toggle:last-child {
     display: none !important;
   }
 }

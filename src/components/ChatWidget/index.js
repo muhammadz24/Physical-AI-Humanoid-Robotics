@@ -25,6 +25,26 @@ const ChatWidget = () => {
   const messageListRef = useRef(null);
   const inputRef = useRef(null);
 
+  // Helper: Generate temporary ID for new messages
+  const generateTempId = () => {
+    // Use crypto.randomUUID if available (modern browsers), otherwise fallback
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    // Fallback: Use timestamp + random number with 'temp_' prefix
+    return `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  };
+
+  // Helper: Check if ID is a real database UUID (vs temp ID)
+  const isRealDatabaseId = (id) => {
+    if (!id) return false;
+    // Real UUIDs from database don't have 'temp_' prefix
+    if (id.startsWith('temp_')) return false;
+    // Real UUIDs match the pattern: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidPattern.test(id);
+  };
+
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     if (messageListRef.current) {
@@ -157,9 +177,9 @@ const ChatWidget = () => {
     }, 100);
   };
 
-  // Delete a single message by ID (authenticated users only)
+  // Delete a single message by ID
   const handleDeleteMessage = async (messageId) => {
-    if (!messageId || !isAuthenticated) {
+    if (!messageId) {
       return;
     }
 
@@ -172,18 +192,28 @@ const ChatWidget = () => {
     }
 
     try {
-      const response = await apiRequest(API_ENDPOINTS.CHAT.DELETE_MESSAGE(messageId), {
-        method: 'DELETE',
-      });
+      // Check if this is a real database ID or a temporary ID
+      const isRealId = isRealDatabaseId(messageId);
 
-      if (!response.ok) {
-        throw new Error('Failed to delete message from server');
+      if (isAuthenticated && isRealId) {
+        // USER with real DB ID: Delete from database
+        const response = await apiRequest(API_ENDPOINTS.CHAT.DELETE_MESSAGE(messageId), {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete message from server');
+        }
+
+        console.log('Message deleted from database');
+      } else {
+        // GUEST or temp ID: Just remove from state (sessionStorage auto-saves via useEffect)
+        console.log('Message removed from state (temp ID or guest mode)');
       }
 
       // Remove both user and bot messages with this ID from UI
       setMessages(prev => prev.filter(msg => msg.id !== messageId));
 
-      console.log('Message deleted successfully');
     } catch (error) {
       console.error('Failed to delete message:', error);
       alert('Failed to delete message. Please try again.');
@@ -234,11 +264,15 @@ const ChatWidget = () => {
       return;
     }
 
-    // Add user message to chat
+    // Generate a temporary ID for this message pair
+    const tempId = generateTempId();
+
+    // Add user message to chat with temp ID
     const userMessage = {
       type: 'user',
       content: query,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      id: tempId  // Temporary ID for instant deletion capability
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -268,29 +302,32 @@ const ChatWidget = () => {
 
       const data = await response.json();
 
-      // Add bot response to chat
+      // Add bot response to chat with same temp ID (so they can be deleted together)
       const botMessage = {
         type: 'bot',
         content: data.answer,
         citations: data.citations || [],
         confidence: data.confidence,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        id: tempId  // Same ID as user message for paired deletion
       };
 
       setMessages(prev => [...prev, botMessage]);
 
-      // Note: For authenticated users, backend already saved to DB
-      // For guests, useEffect will save to sessionStorage
+      // Note: For authenticated users, backend already saved to DB with a real UUID
+      // Temp IDs allow instant deletion; on page reload, real UUIDs are loaded
+      // For guests, useEffect will save to sessionStorage with temp IDs
 
     } catch (error) {
       console.error('Chat API error:', error);
 
-      // Add error message with DEBUG info
+      // Add error message with DEBUG info and temp ID
       const errorMessage = {
         type: 'bot',
         content: 'DEBUG ERROR: ' + (error.message || JSON.stringify(error)),
         citations: [],
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        id: tempId  // Same ID for deletion
       };
 
       setMessages(prev => [...prev, errorMessage]);
@@ -414,8 +451,8 @@ const ChatWidget = () => {
                       {msg.content}
                     </div>
 
-                    {/* Delete button for individual user messages (authenticated users only) */}
-                    {msg.type === 'user' && isAuthenticated && msg.id && (
+                    {/* Delete button for individual user messages (all users with message IDs) */}
+                    {msg.type === 'user' && msg.id && (
                       <button
                         className={styles.deleteMessageButton}
                         onClick={() => handleDeleteMessage(msg.id)}
