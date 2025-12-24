@@ -61,19 +61,24 @@ class ChatService:
                 confidence=citations[0].similarity_score if citations else 0.0,
                 retrieved_chunks=len(citations),
                 response_time_ms=(time.time() - start_time) * 1000,
-                model="gemini-1.5-flash"
+                model="gemini-1.5-flash-001"
             )
 
         except Exception as e:
-            print(f"Error in chat service: {e}")
+            import traceback
+            error_trace = traceback.format_exc()
+            print(f"🐛 CHAT SERVICE EXCEPTION:\n{error_trace}")
+
+            # DEBUG MODE: Include actual error details
+            error_details = f"{type(e).__name__}: {str(e)}"
             return ChatResponse(
                 status="error",
-                answer="I encountered an issue. Please try again.",
+                answer=f"DEBUG ERROR: {error_details}",
                 citations=[],
                 confidence=0.0,
                 retrieved_chunks=0,
                 response_time_ms=0,
-                model="gemini-1.5-flash"
+                model="gemini-1.5-flash-001"
             )
 
 chat_service = ChatService()
