@@ -1,11 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './styles.module.css';
-import { API_BASE_URL } from '@site/src/config/api';
+import { useAuth } from '@site/src/components/AuthProvider';
+import { apiRequest, API_ENDPOINTS, API_BASE_URL } from '@site/src/utils/api';
 
 const ChatWidget = () => {
+  // Auth context
+  const { user, isAuthenticated } = useAuth();
+
   // UI State
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   // Chat State
   const [messages, setMessages] = useState([]);
@@ -33,6 +38,73 @@ const ChatWidget = () => {
       inputRef.current.focus();
     }
   }, [isOpen]);
+
+  // HYBRID STORAGE: Load chat history on mount
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      setIsLoadingHistory(true);
+
+      try {
+        if (isAuthenticated) {
+          // USER: Fetch from database
+          const response = await apiRequest(API_ENDPOINTS.CHAT.HISTORY + '?limit=50', {
+            method: 'GET',
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+
+            // Map database format to UI format
+            const loadedMessages = data.data.map(chat => ([
+              {
+                type: 'user',
+                content: chat.query,
+                timestamp: chat.created_at
+              },
+              {
+                type: 'bot',
+                content: chat.response,
+                citations: chat.metadata?.citations || [],
+                confidence: chat.metadata?.confidence,
+                timestamp: chat.created_at
+              }
+            ])).flat();
+
+            setMessages(loadedMessages);
+          }
+        } else {
+          // GUEST: Load from sessionStorage
+          const storedHistory = sessionStorage.getItem('chat_history');
+          if (storedHistory) {
+            try {
+              const parsedHistory = JSON.parse(storedHistory);
+              setMessages(parsedHistory);
+            } catch (e) {
+              console.error('Failed to parse chat history from sessionStorage:', e);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load chat history:', error);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    loadChatHistory();
+  }, [isAuthenticated]);
+
+  // HYBRID STORAGE: Save guest messages to sessionStorage
+  useEffect(() => {
+    // Only save for guests (authenticated users auto-save to DB)
+    if (!isAuthenticated && messages.length > 0) {
+      try {
+        sessionStorage.setItem('chat_history', JSON.stringify(messages));
+      } catch (e) {
+        console.error('Failed to save chat history to sessionStorage:', e);
+      }
+    }
+  }, [messages, isAuthenticated]);
 
   // Select-to-Ask: Listen for text selection
   useEffect(() => {
@@ -83,6 +155,42 @@ const ChatWidget = () => {
     }, 100);
   };
 
+  // Delete all chat history
+  const handleDeleteHistory = async () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete all chat history? This action cannot be undone.'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      if (isAuthenticated) {
+        // USER: Delete from database
+        const response = await apiRequest(API_ENDPOINTS.CHAT.DELETE_HISTORY, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete chat history from server');
+        }
+
+        console.log('Chat history deleted from database');
+      } else {
+        // GUEST: Delete from sessionStorage
+        sessionStorage.removeItem('chat_history');
+        console.log('Chat history deleted from sessionStorage');
+      }
+
+      // Clear UI
+      setMessages([]);
+    } catch (error) {
+      console.error('Failed to delete chat history:', error);
+      alert('Failed to delete chat history. Please try again.');
+    }
+  };
+
   // Send query to backend API
   const handleSendQuery = async (contextText = null) => {
     const query = inputValue.trim();
@@ -104,10 +212,11 @@ const ChatWidget = () => {
 
     try {
       // Call backend API
+      // Note: Backend auto-saves for authenticated users
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         mode: 'cors',
-        credentials: 'include',
+        credentials: 'include', // Send JWT cookie for auth detection
         headers: {
           'Content-Type': 'application/json',
         },
@@ -134,6 +243,9 @@ const ChatWidget = () => {
       };
 
       setMessages(prev => [...prev, botMessage]);
+
+      // Note: For authenticated users, backend already saved to DB
+      // For guests, useEffect will save to sessionStorage
 
     } catch (error) {
       console.error('Chat API error:', error);
@@ -191,22 +303,50 @@ const ChatWidget = () => {
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
               </svg>
               <span>AI Assistant</span>
+              {isAuthenticated && user && (
+                <span className={styles.userBadge}>({user.name})</span>
+              )}
             </div>
-            <button
-              className={styles.closeButton}
-              onClick={() => setIsOpen(false)}
-              aria-label="Close chat"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
+            <div className={styles.headerActions}>
+              {/* Delete History Button */}
+              {messages.length > 0 && (
+                <button
+                  className={styles.deleteButton}
+                  onClick={handleDeleteHistory}
+                  aria-label="Delete chat history"
+                  title="Delete all chat history"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </button>
+              )}
+              {/* Close Button */}
+              <button
+                className={styles.closeButton}
+                onClick={() => setIsOpen(false)}
+                aria-label="Close chat"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Message List */}
           <div className={styles.messageList} ref={messageListRef}>
-            {messages.length === 0 && (
+            {isLoadingHistory && (
+              <div className={styles.emptyState}>
+                <p>Loading chat history...</p>
+              </div>
+            )}
+
+            {!isLoadingHistory && messages.length === 0 && (
               <div className={styles.emptyState}>
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10"></circle>
@@ -214,6 +354,11 @@ const ChatWidget = () => {
                   <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
                 <p>Ask me anything about the Physical AI & Humanoid Robotics textbook!</p>
+                {!isAuthenticated && (
+                  <p className={styles.guestNote}>
+                    <small>Guest mode: History saved in browser session</small>
+                  </p>
+                )}
               </div>
             )}
 
