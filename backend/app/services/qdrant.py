@@ -30,12 +30,13 @@ class QdrantService:
         try:
             # Qdrant client is synchronous, but we are called with await.
             # In a real async app we might run_in_executor, but for now this works.
-            results = self.client.search(
+            results = self.client.query_points(
                 collection_name=self.collection_name,
-                query_vector=query_vector,
+                query=query_vector,
                 limit=limit
             )
-            return results
+            # query_points returns QueryResponse with .points attribute
+            return results.points if hasattr(results, 'points') else results
         except Exception as e:
             print(f"[ERROR] Qdrant search failed: {e}")
             # Return empty list instead of crashing the app

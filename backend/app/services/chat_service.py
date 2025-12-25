@@ -1,7 +1,9 @@
 from typing import List, Dict, Any, Optional
 import time
 import json
+import traceback
 from uuid import UUID
+from fastapi import HTTPException
 from backend.app.services.embedding import get_embedding
 from backend.app.services.qdrant import qdrant_service
 from backend.app.services.llm import llm_service
@@ -16,11 +18,45 @@ class ChatService:
         start_time = time.time()
 
         try:
-            # 1. Generate embedding using Gemini API
-            query_vector = await get_embedding(query)
+            # 1. Generate embedding using Gemini API (with defensive error handling)
+            try:
+                query_vector = await get_embedding(query)
+            except Exception as embedding_error:
+                # Log detailed error for developer
+                print("=" * 80)
+                print("🔥 GEMINI EMBEDDING ERROR")
+                print("=" * 80)
+                print(f"Error Type: {type(embedding_error).__name__}")
+                print(f"Error Message: {str(embedding_error)}")
+                print("\nFull Traceback:")
+                print(traceback.format_exc())
+                print("=" * 80)
 
-            # 2. Search Vector DB
-            search_results = await qdrant_service.search(query_vector)
+                # Return user-friendly error (keeping existing error flow)
+                raise HTTPException(
+                    status_code=503,
+                    detail="Embedding service is currently unavailable. Please try again later."
+                )
+
+            # 2. Search Vector DB (with defensive error handling)
+            try:
+                search_results = await qdrant_service.search(query_vector)
+            except Exception as qdrant_error:
+                # Log detailed error for developer
+                print("=" * 80)
+                print("🔥 QDRANT SEARCH ERROR")
+                print("=" * 80)
+                print(f"Error Type: {type(qdrant_error).__name__}")
+                print(f"Error Message: {str(qdrant_error)}")
+                print("\nFull Traceback:")
+                print(traceback.format_exc())
+                print("=" * 80)
+
+                # Return user-friendly error (keeping existing error flow)
+                raise HTTPException(
+                    status_code=503,
+                    detail="Vector search service is currently unavailable. Please try again later."
+                )
 
             # 3. Prepare Context
             context_chunks = []
@@ -45,7 +81,7 @@ class ChatService:
                     source_file=payload.get("source_file", "")
                 ))
 
-            # 4. Generate Answer
+            # 4. Generate Answer (with defensive error handling)
             context_str = "\n\n".join([f"Context {i+1}: {c['content']}" for i, c in enumerate(context_chunks)])
 
             system_prompt = (
@@ -54,10 +90,30 @@ class ChatService:
                 f"\n\nContext:\n{context_str}"
             )
 
-            answer = await llm_service.get_response(query, system_prompt=system_prompt)
+            try:
+                answer = await llm_service.get_response(query, system_prompt=system_prompt)
+            except Exception as llm_error:
+                # Log detailed error for developer
+                print("=" * 80)
+                print("🔥 GEMINI LLM ERROR")
+                print("=" * 80)
+                print(f"Error Type: {type(llm_error).__name__}")
+                print(f"Error Message: {str(llm_error)}")
+                print("\nFull Traceback:")
+                print(traceback.format_exc())
+                print("=" * 80)
+
+                # Return user-friendly error (keeping existing error flow)
+                raise HTTPException(
+                    status_code=503,
+                    detail="AI language model is currently unavailable. Please try again later."
+                )
 
             # 5. Save to database if user is logged in
+            print(f"[CHAT SERVICE DEBUG] Checking DB save: user_id={user_id}, pool={bool(db_manager.pool)}")
+
             if user_id and db_manager.pool:
+                print(f"[CHAT SERVICE DEBUG] ✅ Saving chat for user: {user_id}")
                 try:
                     # Prepare metadata (citations, confidence, etc.)
                     metadata = {
@@ -87,6 +143,9 @@ class ChatService:
                             answer,
                             json.dumps(metadata)
                         )
+
+                    print(f"[CHAT SERVICE DEBUG] ✅ Chat saved to database successfully")
+
                 except Exception as db_error:
                     # Don't fail the request if DB save fails, just log it
                     print(f"[WARNING] Failed to save chat to database: {db_error}")

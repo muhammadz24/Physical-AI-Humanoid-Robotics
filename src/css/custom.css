@@ -100,6 +100,52 @@
   box-shadow: 0 4px 6px rgba(0, 217, 255, 0.1);
 }
 
+/* ========================================
+   Force Disable Mobile Menu (FR-001, FR-002)
+   ======================================== */
+
+/* Hide hamburger toggle at ALL breakpoints to maintain desktop nav visibility.
+   Overrides Docusaurus default responsive behavior (@media max-width: 996px).
+   Related: User Story 1 - Desktop Navigation Always Visible */
+.navbar__toggle {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Force navbar items (including AuthButtons) to remain visible on mobile.
+   Docusaurus hides .navbar__items--right on mobile by default, but since we
+   disabled the hamburger menu, we need to keep these items visible. */
+@media (max-width: 996px) {
+  .navbar__items--right {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* Ensure navbar inner layout stays horizontal on mobile */
+  .navbar__inner {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* Ensure left items don't take full width */
+  .navbar__items {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  /* Make auth buttons smaller on mobile to fit */
+  .navbar__items--right > * {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
 /* Sidebar glassmorphism */
 .theme-doc-sidebar-container {
   background: rgba(248, 249, 250, 0.8) !important;

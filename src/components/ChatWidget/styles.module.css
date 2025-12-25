@@ -42,12 +42,13 @@
 /* Chat Modal */
 .chatModal {
   position: fixed;
+  top: 80px; /* Ensure modal opens below navbar (navbar height ~60px + 20px margin) */
   bottom: 100px;
   right: 24px;
   width: 400px;
   max-width: calc(100vw - 48px);
-  height: 600px;
-  max-height: calc(100vh - 150px);
+  height: auto; /* Changed from 600px to auto to respect top/bottom constraints */
+  max-height: calc(100vh - 180px); /* Adjusted: 80px top + 100px bottom = 180px total */
   background: var(--ifm-background-color);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -405,7 +406,7 @@
 /* Select-to-Ask Tooltip */
 .selectTooltip {
   position: absolute;
-  z-index: 99; /* Z-index 99: Below navbar (100) to prevent overlap with hamburger menu */
+  z-index: 99; /* Z-index 99: Below navbar (1000) to prevent overlap with navbar elements */
   animation: fadeIn 0.2s ease;
 }
 
@@ -483,13 +484,20 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .chatModal {
-    width: 100vw;
-    height: 100vh;
-    bottom: 0;
-    right: 0;
-    border-radius: 0;
+    /* Responsive sizing instead of fullscreen */
+    width: calc(100vw - 32px); /* 90% width with margins */
+    height: 70vh; /* 70% of viewport height, leaves space for navbar */
+    max-height: 70vh;
     max-width: none;
-    max-height: none;
+
+    /* Positioning: Bottom-right but with breathing room */
+    top: unset; /* Override desktop top: 80px to allow bottom positioning */
+    bottom: 20px; /* Space from bottom */
+    right: 16px; /* Centered-ish on mobile */
+    left: 16px; /* Equal margins on both sides */
+
+    /* Visual polish */
+    border-radius: 12px; /* Keep rounded corners on mobile */
   }
 
   .floatingButton {

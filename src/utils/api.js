@@ -67,7 +67,8 @@ export const API_ENDPOINTS = {
   },
   CHAT: {
     SEND_MESSAGE: '/api/chat',
-    DELETE_HISTORY: '/api/chat/history',
+    HISTORY: '/api/chat/history', // GET endpoint for fetching chat history
+    DELETE_HISTORY: '/api/chat/history', // DELETE endpoint for clearing history
     DELETE_MESSAGE: (messageId) => `/api/chat/${messageId}`,
   },
   PERSONALIZE: {

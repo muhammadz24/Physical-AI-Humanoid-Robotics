@@ -56,10 +56,21 @@ const ChatWidget = () => {
     return uuidPattern.test(id);
   };
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll to show START of newest message (not absolute bottom)
   useEffect(() => {
-    if (messageListRef.current) {
-      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    if (messageListRef.current && messages.length > 0) {
+      // Get the last message element in the DOM
+      const messageElements = messageListRef.current.querySelectorAll('[data-message-index]');
+      const lastMessage = messageElements[messageElements.length - 1];
+
+      if (lastMessage) {
+        // Scroll to the TOP of the newest message (block: "start")
+        // This ensures users see the beginning of long AI responses
+        lastMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        // Fallback: If no data-message-index, scroll to bottom (original behavior)
+        messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+      }
     }
   }, [messages]);
 
@@ -482,7 +493,11 @@ const ChatWidget = () => {
               )}
 
               {messages.map((msg, idx) => (
-                <div key={idx} className={msg.type === 'user' ? styles.userMessage : styles.botMessage}>
+                <div
+                  key={idx}
+                  data-message-index={idx}
+                  className={msg.type === 'user' ? styles.userMessage : styles.botMessage}
+                >
                   <div className={styles.messageWrapper}>
                     <div className={styles.messageContent}>
                       {msg.content}

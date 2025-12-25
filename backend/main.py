@@ -1,6 +1,9 @@
+import os
+import traceback
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from backend.app.api.routes import router as chat_router
 from backend.app.api.auth import router as auth_router
 from backend.app.api.personalize import router as personalize_router
@@ -42,14 +45,63 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS
+# CORS - Smart origin detection for local dev + production
+# Read allowed origins from environment variable, or use safe defaults
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
+if allowed_origins_env:
+    # Production: Use environment variable (comma-separated list)
+    allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",")]
+else:
+    # Development/Fallback: Allow localhost + wildcard for Vercel preview deployments
+    allowed_origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "*"  # Fallback for production (should set ALLOWED_ORIGINS env var)
+    ]
+
+print(f"[CORS] Allowed origins: {allowed_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"],
     allow_headers=["*"],
 )
+
+# GLOBAL EXCEPTION HANDLER - Catch all unhandled exceptions
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """
+    Global exception handler to prevent raw 500 errors from reaching users.
+
+    Developer Experience:
+    - Full error traceback printed to terminal for debugging
+
+    User Experience:
+    - Clean JSON response with user-friendly message
+    - 503 status (Service Unavailable) instead of 500 (Internal Server Error)
+    """
+    # 1. Log for Developer (Visible in Terminal)
+    print("=" * 80)
+    print("🔥 CRITICAL ERROR - Global Exception Handler")
+    print("=" * 80)
+    print(f"Request URL: {request.url}")
+    print(f"Request Method: {request.method}")
+    print(f"Exception Type: {type(exc).__name__}")
+    print(f"Exception Message: {str(exc)}")
+    print("\nFull Traceback:")
+    print(traceback.format_exc())
+    print("=" * 80)
+
+    # 2. Return Safe Message to User
+    return JSONResponse(
+        status_code=503,
+        content={
+            "detail": "System is currently busy. Please try again later.",
+            "error_type": type(exc).__name__  # For debugging (safe to expose)
+        }
+    )
 
 # ROUTES - Explicit /api prefix (brute-force fix for Vercel)
 app.include_router(chat_router, prefix="/api/chat", tags=["chat"])

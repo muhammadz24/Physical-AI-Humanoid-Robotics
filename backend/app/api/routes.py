@@ -29,17 +29,26 @@ async def chat(
     """
     # Try to get current user (optional - don't fail if not authenticated)
     user_id = None
+
+    # DEBUG: Log cookie presence
+    print(f"[CHAT DEBUG] access_token cookie: {'Present' if access_token else 'Missing'}")
+
     if access_token:
         try:
             # Attempt to get current user (for logged-in users)
             current_user = await get_current_user(access_token)
             user_id = current_user['id']
-        except HTTPException:
+            print(f"[CHAT DEBUG] ✅ User authenticated: {user_id} ({current_user.get('name', 'Unknown')})")
+        except HTTPException as e:
             # User not authenticated - treat as guest
+            print(f"[CHAT DEBUG] ❌ Authentication failed: {e.detail}")
             pass
+    else:
+        print("[CHAT DEBUG] ⚠️ No access_token cookie - treating as guest")
 
     try:
         # Process query with optional user_id (saves to DB if logged in)
+        print(f"[CHAT DEBUG] Processing query with user_id: {user_id}")
         response = await chat_service.process_query(request.query, user_id=user_id)
 
         # DEBUG: If service returned an error response, expose it
