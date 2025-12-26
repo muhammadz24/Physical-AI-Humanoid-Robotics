@@ -1,17 +1,9 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "build" }
-    }
-  ],
+  "outputDirectory": "build",
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api/index.py"
     }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false
+  ]
 }
