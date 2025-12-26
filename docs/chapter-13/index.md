@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 13
 title: Chapter 13 - Conversational Robotics (Capstone)
 ---
 

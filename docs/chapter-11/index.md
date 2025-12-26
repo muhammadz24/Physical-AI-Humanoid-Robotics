@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 11
 title: Chapter 11 - Humanoid Kinematics & Locomotion
 ---
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 10
 title: Chapter 10 - Reinforcement Learning & Sim-to-Real
 ---
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 9
 title: Chapter 9 - Advanced Perception & Navigation
 ---
 

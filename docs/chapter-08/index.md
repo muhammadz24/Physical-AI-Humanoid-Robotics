@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 8
 title: Chapter 8 - NVIDIA Isaac Platform
 ---
 

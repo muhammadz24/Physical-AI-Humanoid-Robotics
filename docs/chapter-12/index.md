@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 12
 title: Chapter 12 - Manipulation & Interaction
 ---
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 7
 title: Chapter 7 - Advanced Simulation & Unity
 ---
 
