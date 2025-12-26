@@ -11,13 +11,11 @@ const config = {
   tagline: 'Learn Physical AI, ROS 2, and Humanoid Robotics from Fundamentals to Advanced',
   favicon: 'img/logo.svg',
 
-  // Set the production url of your site here
-  url: process.env.VERCEL_ENV === 'production'
-    ? 'https://physical-ai-humanoid-robotics.vercel.app'
-    : 'https://muhammadz24.github.io',
+  // Set the production url of your site here (Vercel deployment)
+  url: 'https://physical-ai-humanoid-robotics-mz24.vercel.app',
   // Set the /<baseUrl>/ pathname under which your site is served
-  // Use root '/' for Vercel/Local, use repo name for GitHub Pages if needed
-  baseUrl: process.env.VERCEL_ENV === 'production' ? '/' : '/',
+  // CRITICAL: Must be root '/' for Vercel clean URLs
+  baseUrl: '/',
 
   // GitHub pages deployment config.
   organizationName: 'muhammadz24',
