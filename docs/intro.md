@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 title: Welcome
+slug: /intro
 ---
 
 # Welcome to Physical AI & Humanoid Robotics

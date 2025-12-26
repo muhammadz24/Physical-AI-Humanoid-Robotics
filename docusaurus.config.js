@@ -21,7 +21,7 @@ const config = {
   organizationName: 'muhammadz24',
   projectName: 'Physical-AI-Humanoid-Robotics',
   deploymentBranch: 'gh-pages',
-  trailingSlash: true,
+  trailingSlash: false,
 
   onBrokenLinks: 'ignore',
   onBrokenMarkdownLinks: 'warn',
