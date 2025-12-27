@@ -38,9 +38,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Physical AI & Humanoid Robotics Chatbot",
     version="1.0.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
     redirect_slashes=False,
     lifespan=lifespan
 )
@@ -103,15 +103,16 @@ async def global_exception_handler(request: Request, exc: Exception):
         }
     )
 
-# ROUTES - Explicit /api prefix (brute-force fix for Vercel)
-app.include_router(chat_router, prefix="/api/chat", tags=["chat"])
-app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
-app.include_router(personalize_router, prefix="/api/personalize", tags=["personalize"])
+# ROUTES - Resource-level prefix ONLY (Vercel rewrite adds /api context)
+# Final URLs: /api/chat, /api/auth, /api/personalize
+app.include_router(chat_router, prefix="/chat", tags=["chat"])
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
+app.include_router(personalize_router, prefix="/personalize", tags=["personalize"])
 
-@app.get("/api/health")
+@app.get("/health")
 def health_check():
     return {"status": "healthy"}
 
-@app.get("/api")
+@app.get("/")
 def root():
-    return {"message": "API is running. POST to /api/chat to talk."}
+    return {"message": "API is running. POST to /chat to talk."}

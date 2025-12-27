@@ -11,7 +11,7 @@ from backend.app.api.auth import get_current_user
 router = APIRouter()
 
 # FIXED: Empty string route to match prefix exactly
-# Main.py sets prefix="/api/chat", route="" = /api/chat (no trailing slash)
+# Main.py sets prefix="/chat", Vercel rewrite adds /api → Final URL: POST /api/chat
 @router.post("", response_model=ChatResponse)
 async def chat(
     request: ChatRequest,
