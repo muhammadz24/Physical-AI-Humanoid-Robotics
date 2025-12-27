@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "rm -rf node_modules .docusaurus build && npm install && npm run build",
   "outputDirectory": "build",
   "cleanUrls": true,
   "trailingSlash": false,
