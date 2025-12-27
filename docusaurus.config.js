@@ -39,8 +39,7 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          routeBasePath: '/', // Serve docs at root path for immediate sidebar visibility
-          // Breadcrumb navigation (FR-010)
+          routeBasePath: '/docs',
           breadcrumbs: true,
         },
         blog: false,
