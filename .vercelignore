@@ -1,6 +1,5 @@
 node_modules
 public
-*.md
 tests
 backend/scripts
 backend/migrations
