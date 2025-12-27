@@ -38,6 +38,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Physical AI & Humanoid Robotics Chatbot",
     version="1.0.0",
+    root_path="/api",  # Critical: Vercel mounts app at /api, this strips the prefix
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
