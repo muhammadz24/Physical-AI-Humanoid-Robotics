@@ -373,6 +373,24 @@ git push origin main
   - `langchain-core>=0.3.0`
 - If you update LangChain packages, maintain flexible constraints to avoid version lock conflicts
 
+### 404 Errors on Doc Routes (intro, chapters, etc.)
+**Problem:** Doc routes return 404 on Vercel despite working locally
+**Root Cause:** `.vercelignore` file excludes `*.md` files, preventing docs content from being deployed
+**Solution:**
+- Remove `*.md` from `.vercelignore` (docs/*.md files are REQUIRED for build)
+- Ensure build script includes cache clearing: `"build": "docusaurus clear && docusaurus build"`
+- Verify deployment with: `curl -I https://yourapp.vercel.app/intro` (should return 200 OK)
+
+**Critical files to check:**
+1. `.vercelignore` - Must NOT exclude docs markdown files
+2. `package.json` - Build script should clear cache before building
+3. `vercel.json` - cleanUrls and trailingSlash settings must match Docusaurus config
+
+**Evidence of this issue:**
+- JS bundle hashes don't change across deployments (stale build)
+- `/intro.html` redirects to `/intro` (308) but `/intro` returns 404
+- Local build works but Vercel deployment missing routes
+
 ---
 
 ## Project Workflow & Development Practices
