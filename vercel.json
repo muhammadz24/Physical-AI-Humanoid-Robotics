@@ -1,5 +1,14 @@
 {
-  "outputDirectory": "build",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/api/(.*)",
