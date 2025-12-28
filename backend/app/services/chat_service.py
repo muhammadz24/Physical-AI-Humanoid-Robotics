@@ -33,10 +33,10 @@ class ChatService:
                 print(traceback.format_exc())
                 print("=" * 80)
 
-                # Return user-friendly error (keeping existing error flow)
+                # DEBUG MODE: Expose real error for troubleshooting
                 raise HTTPException(
                     status_code=503,
-                    detail="Embedding service is currently unavailable. Please try again later."
+                    detail=f"Embedding Error ({type(embedding_error).__name__}): {str(embedding_error)}"
                 )
 
             # 2. Search Vector DB (with defensive error handling)
@@ -53,10 +53,10 @@ class ChatService:
                 print(traceback.format_exc())
                 print("=" * 80)
 
-                # Return user-friendly error (keeping existing error flow)
+                # DEBUG MODE: Expose real error for troubleshooting
                 raise HTTPException(
                     status_code=503,
-                    detail="Vector search service is currently unavailable. Please try again later."
+                    detail=f"Qdrant Error ({type(qdrant_error).__name__}): {str(qdrant_error)}"
                 )
 
             # 3. Prepare Context
@@ -104,10 +104,10 @@ class ChatService:
                 print(traceback.format_exc())
                 print("=" * 80)
 
-                # Return user-friendly error (keeping existing error flow)
+                # DEBUG MODE: Expose real error for troubleshooting
                 raise HTTPException(
                     status_code=503,
-                    detail="AI language model is currently unavailable. Please try again later."
+                    detail=f"LLM Error ({type(llm_error).__name__}): {str(llm_error)}"
                 )
 
             # 5. Save to database if user is logged in
