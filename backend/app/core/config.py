@@ -44,7 +44,7 @@ class Settings(BaseSettings):
 
     # Google Gemini Configuration
     gemini_api_key: str
-    gemini_model: str = "gemini-1.5-flash"
+    gemini_model: str = "gemini-1.5-flash-001"  # CRITICAL: Must use -001 suffix (Google API requirement)
 
     # JWT Authentication
     jwt_secret_key: str

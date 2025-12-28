@@ -9,6 +9,7 @@ from backend.app.services.qdrant import qdrant_service
 from backend.app.services.llm import llm_service
 from backend.app.models.chat import ChatResponse, Citation
 from backend.app.core.database import db_manager
+from backend.app.core.config import settings
 
 class ChatService:
     async def process_query(self, query: str, user_id: Optional[UUID] = None) -> ChatResponse:
@@ -128,7 +129,7 @@ class ChatService:
                         ],
                         "confidence": citations[0].similarity_score if citations else 0.0,
                         "retrieved_chunks": len(citations),
-                        "model": "gemini-1.5-flash-001"
+                        "model": settings.gemini_model
                     }
 
                     # Insert chat into database
@@ -158,7 +159,7 @@ class ChatService:
                 confidence=citations[0].similarity_score if citations else 0.0,
                 retrieved_chunks=len(citations),
                 response_time_ms=(time.time() - start_time) * 1000,
-                model="gemini-1.5-flash-001"
+                model=settings.gemini_model
             )
 
         except Exception as e:
@@ -175,7 +176,7 @@ class ChatService:
                 confidence=0.0,
                 retrieved_chunks=0,
                 response_time_ms=0,
-                model="gemini-1.5-flash-001"
+                model=settings.gemini_model
             )
 
     async def get_user_chat_history(self, user_id: UUID, limit: int = 50) -> List[Dict[str, Any]]:
