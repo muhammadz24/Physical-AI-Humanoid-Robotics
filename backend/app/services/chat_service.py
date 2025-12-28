@@ -163,9 +163,10 @@ class ChatService:
             )
 
         except Exception as e:
-            import traceback
-            error_trace = traceback.format_exc()
-            print(f"🐛 CHAT SERVICE EXCEPTION:\n{error_trace}")
+            # CRITICAL FIX: Use full_traceback variable (traceback already imported at top)
+            full_traceback = traceback.format_exc()
+            print(f"🔥 CRITICAL SERVICE ERROR: {str(e)}")
+            print(f"🐛 FULL TRACEBACK:\n{full_traceback}")
 
             # DEBUG MODE: Include actual error details
             error_details = f"{type(e).__name__}: {str(e)}"
