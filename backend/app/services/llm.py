@@ -1,61 +1,62 @@
-import httpx
+"""
+LLM Service using Official Google Generative AI SDK
+
+This module provides a clean interface to Google's Gemini models using
+the official google-generativeai library instead of manual HTTP requests.
+The SDK handles URL construction, versioning, and API compatibility automatically.
+"""
+
+import asyncio
+import google.generativeai as genai
 from backend.app.core.config import settings
-import os
-import json
+
 
 class LLMService:
     def __init__(self):
-        # Get API key from settings
-        self.api_key = settings.gemini_api_key or os.getenv("GEMINI_API_KEY")
-        if not self.api_key:
-            raise ValueError("CRITICAL: GEMINI_API_KEY is missing in environment variables")
+        """Initialize the LLM service with Google Gemini SDK."""
+        # Configure the official SDK with API key from settings
+        genai.configure(api_key=settings.gemini_api_key)
 
-        # Use model from settings (defaults to gemini-1.5-flash)
-        self.model = settings.gemini_model
-        self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
+        # Initialize the generative model
+        # SDK automatically handles model versioning and URL construction
+        self.model = genai.GenerativeModel(settings.gemini_model)
 
-    async def get_response(self, prompt: str, system_prompt: str = "You are a helpful AI assistant for humanoid robotics."):
-        """Generate a response using Google Gemini via direct HTTP."""
-        try:
-            # Combine system prompt and user prompt
-            full_prompt = f"{system_prompt}\n\nUser Question: {prompt}"
+    async def get_response(
+        self,
+        prompt: str,
+        system_prompt: str = "You are a helpful AI assistant for humanoid robotics."
+    ) -> str:
+        """
+        Generate a response using Google Gemini via official SDK.
 
-            # Prepare request payload
-            payload = {
-                "contents": [{
-                    "parts": [{
-                        "text": full_prompt
-                    }]
-                }]
-            }
+        Args:
+            prompt: The user's question/prompt
+            system_prompt: System instructions for the model
 
-            # Make HTTP request
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(self.api_url, json=payload)
-                response.raise_for_status()
+        Returns:
+            Generated text response from the model
 
-                data = response.json()
-                # Extract text from response
-                if "candidates" in data and len(data["candidates"]) > 0:
-                    candidate = data["candidates"][0]
-                    if "content" in candidate and "parts" in candidate["content"]:
-                        parts = candidate["content"]["parts"]
-                        if len(parts) > 0 and "text" in parts[0]:
-                            return parts[0]["text"]
+        Raises:
+            Exception: If the API call fails (preserves original error for debugging)
+        """
+        # Combine system prompt and user prompt
+        full_prompt = f"{system_prompt}\n\nUser Question: {prompt}"
 
-                return "I apologize, but I couldn't generate a response. Please try again."
+        # Run the synchronous SDK call in a thread pool to maintain async compatibility
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            None,
+            self.model.generate_content,
+            full_prompt
+        )
 
-        except httpx.HTTPStatusError as e:
-            # HTTP error from Gemini API (403, 429, etc.)
-            error_body = e.response.text
-            print(f"🐛 GEMINI API HTTP ERROR: {e.response.status_code} - {error_body}")
-            raise Exception(f"Gemini API returned {e.response.status_code}: {error_body}")
-        except Exception as e:
-            # Other errors (network, timeout, etc.)
-            import traceback
-            full_trace = traceback.format_exc()
-            print(f"🐛 LLM SERVICE ERROR:\n{full_trace}")
-            raise Exception(f"LLM Error ({type(e).__name__}): {str(e)}")
+        # Extract and return the generated text
+        if response and response.text:
+            return response.text
+
+        # Fallback if no text generated
+        return "I apologize, but I couldn't generate a response. Please try again."
+
 
 # Create a singleton instance
 llm_service = LLMService()
