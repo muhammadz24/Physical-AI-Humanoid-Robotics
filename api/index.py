@@ -1,11 +1,7 @@
 import sys
 import os
-from pathlib import Path
 
-# Add backend to path
-sys.path.append(str(Path(__file__).parent.parent))
+# Add the parent directory (root) to sys.path so we can import 'backend'
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from backend.main import app as fastapi_app
-
-# Vercel expects 'app' variable
-app = fastapi_app
+from backend.main import app
