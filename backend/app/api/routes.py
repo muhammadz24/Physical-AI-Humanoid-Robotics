@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Cookie
 from typing import Optional
 from uuid import UUID
+import traceback
 from backend.app.models.chat import ChatRequest, ChatResponse
 from backend.app.services.chat_service import chat_service
 from backend.app.core.database import db_manager
@@ -62,7 +63,7 @@ async def chat(
         # Re-raise HTTP exceptions (from the error check above)
         raise
     except Exception as e:
-        import traceback
+        # Full traceback for debugging (traceback imported at top)
         full_trace = traceback.format_exc()
         print(f"🐛 ROUTE EXCEPTION:\n{full_trace}")
         raise HTTPException(status_code=500, detail=f"Route Error: {type(e).__name__}: {str(e)}")
