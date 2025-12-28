@@ -45,16 +45,17 @@ class Settings(BaseSettings):
 
     # Google Gemini Configuration
     gemini_api_key: str
-    gemini_model: str = "gemini-1.5-flash-001"  # CRITICAL: Must use -001 suffix (Google API requirement)
+    gemini_model: str = "gemini-1.5-flash"  # Base model alias (validator enforces this)
 
     @field_validator('gemini_model', mode='before')
     @classmethod
     def force_correct_gemini_model(cls, v):
         """
         FORCE correct Gemini model version, ignoring environment variables.
-        This prevents 404/HTTP errors from incorrect model names.
+        ERROR FIX: Google API rejected 'gemini-1.5-flash-001' with 404.
+        Reverting to base model alias 'gemini-1.5-flash'.
         """
-        return "gemini-1.5-flash-001"
+        return "gemini-1.5-flash"
 
     # JWT Authentication
     jwt_secret_key: str

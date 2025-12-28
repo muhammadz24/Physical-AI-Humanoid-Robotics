@@ -10,7 +10,7 @@ class LLMService:
         if not self.api_key:
             raise ValueError("CRITICAL: GEMINI_API_KEY is missing in environment variables")
 
-        # Use model from settings (defaults to gemini-1.5-flash-001)
+        # Use model from settings (defaults to gemini-1.5-flash)
         self.model = settings.gemini_model
         self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
 
