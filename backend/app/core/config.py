@@ -7,6 +7,7 @@ to configuration values.
 
 from typing import List
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -45,6 +46,15 @@ class Settings(BaseSettings):
     # Google Gemini Configuration
     gemini_api_key: str
     gemini_model: str = "gemini-1.5-flash-001"  # CRITICAL: Must use -001 suffix (Google API requirement)
+
+    @field_validator('gemini_model', mode='before')
+    @classmethod
+    def force_correct_gemini_model(cls, v):
+        """
+        FORCE correct Gemini model version, ignoring environment variables.
+        This prevents 404/HTTP errors from incorrect model names.
+        """
+        return "gemini-1.5-flash-001"
 
     # JWT Authentication
     jwt_secret_key: str
