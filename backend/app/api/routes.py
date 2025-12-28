@@ -63,9 +63,10 @@ async def chat(
         # Re-raise HTTP exceptions (from the error check above)
         raise
     except Exception as e:
-        # Full traceback for debugging (traceback imported at top)
-        full_trace = traceback.format_exc()
-        print(f"🐛 ROUTE EXCEPTION:\n{full_trace}")
+        # CRITICAL FIX: Use error_details variable name to avoid shadowing traceback module
+        error_details = traceback.format_exc()
+        print(f"🔥 CRITICAL ERROR: {str(e)}")
+        print(f"🐛 FULL TRACEBACK:\n{error_details}")
         raise HTTPException(status_code=500, detail=f"Route Error: {type(e).__name__}: {str(e)}")
 
 
