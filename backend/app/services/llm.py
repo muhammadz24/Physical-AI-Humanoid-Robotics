@@ -1,12 +1,11 @@
 """
-LLM Service using Official Google Generative AI SDK
+LLM Service using Official Google Generative AI SDK (Native Async)
 
-This module provides a clean interface to Google's Gemini models using
-the official google-generativeai library instead of manual HTTP requests.
-The SDK handles URL construction, versioning, and API compatibility automatically.
+Uses the SDK's built-in async methods (generate_content_async) instead of
+wrapping synchronous calls. This prevents event loop issues in serverless
+environments like Vercel.
 """
 
-import asyncio
 import google.generativeai as genai
 from backend.app.core.config import settings
 
@@ -27,7 +26,7 @@ class LLMService:
         system_prompt: str = "You are a helpful AI assistant for humanoid robotics."
     ) -> str:
         """
-        Generate a response using Google Gemini via official SDK.
+        Generate a response using Google Gemini via native async SDK method.
 
         Args:
             prompt: The user's question/prompt
@@ -39,23 +38,24 @@ class LLMService:
         Raises:
             Exception: If the API call fails (preserves original error for debugging)
         """
-        # Combine system prompt and user prompt
-        full_prompt = f"{system_prompt}\n\nUser Question: {prompt}"
+        try:
+            # Combine system prompt and user prompt
+            full_prompt = f"{system_prompt}\n\nUser Question: {prompt}"
 
-        # Run the synchronous SDK call in a thread pool to maintain async compatibility
-        loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(
-            None,
-            self.model.generate_content,
-            full_prompt
-        )
+            # USE NATIVE ASYNC METHOD (No asyncio.run_in_executor needed)
+            response = await self.model.generate_content_async(full_prompt)
 
-        # Extract and return the generated text
-        if response and response.text:
-            return response.text
+            # Extract and return the generated text
+            if response and response.text:
+                return response.text
 
-        # Fallback if no text generated
-        return "I apologize, but I couldn't generate a response. Please try again."
+            # Fallback if no text generated
+            return "I apologize, but I couldn't generate a response. Please try again."
+
+        except Exception as e:
+            print(f"🔥 LLM ASYNC ERROR: {str(e)}")
+            # Re-raise to be caught by chat service error handler
+            raise e
 
 
 # Create a singleton instance

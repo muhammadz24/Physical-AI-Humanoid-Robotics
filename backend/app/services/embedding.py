@@ -1,11 +1,11 @@
 """
-Embedding Service using Official Google Generative AI SDK
+Embedding Service using Official Google Generative AI SDK (Native Async)
 
-Provides text embeddings for RAG retrieval using Google's free
-text-embedding-004 model via the official SDK.
+Uses the SDK's built-in async methods (embed_content_async) instead of
+wrapping synchronous calls. This prevents event loop issues in serverless
+environments like Vercel.
 """
 
-import asyncio
 import google.generativeai as genai
 from backend.app.core.config import settings
 
@@ -21,7 +21,7 @@ class EmbeddingService:
 
     async def get_embedding(self, text: str) -> list[float]:
         """
-        Generate embedding vector for the given text.
+        Generate embedding vector for the given text using native async SDK.
 
         Args:
             text: Input text to embed
@@ -36,23 +36,19 @@ class EmbeddingService:
             # Clean input text
             text = text.replace("\n", " ")
 
-            # Run the synchronous SDK call in a thread pool
-            loop = asyncio.get_event_loop()
-            result = await loop.run_in_executor(
-                None,
-                lambda: genai.embed_content(
-                    model=self.model,
-                    content=text,
-                    task_type="retrieval_document",
-                    title="Embedding"
-                )
+            # USE NATIVE ASYNC METHOD (No asyncio.run_in_executor needed)
+            result = await genai.embed_content_async(
+                model=self.model,
+                content=text,
+                task_type="retrieval_document",
+                title="Embedding"
             )
 
             # Extract and return embedding vector
             return result['embedding']
 
         except Exception as e:
-            print(f"🔥 EMBEDDING SDK ERROR: {str(e)}")
+            print(f"🔥 EMBEDDING ASYNC ERROR: {str(e)}")
             # Re-raise to be caught by chat service error handler
             raise e
 
