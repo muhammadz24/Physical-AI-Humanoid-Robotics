@@ -1,4 +1,4 @@
-print("🚀 STARTUP: Loading backend/main.py...")
+print("[STARTUP] Loading backend/main.py...")
 import os
 import sys
 from fastapi import FastAPI
@@ -7,7 +7,7 @@ from backend.app.api.routes import router as chat_router
 from backend.app.core.config import settings
 
 try:
-    print("🔹 Initializing FastAPI App...")
+    print("[STARTUP] Initializing FastAPI App...")
     app = FastAPI(
         title="Physical AI Chatbot",
         version="1.0.0",
@@ -35,7 +35,7 @@ try:
     # CORRECT ROUTING: Resource-level prefix ONLY
     # Vercel rewrite adds /api context → Final URL: /api/chat
     app.include_router(chat_router, prefix="/chat", tags=["chat"])
-    print("✅ Router registered: /chat (Final URL: /api/chat)")
+    print("[STARTUP] Router registered: /chat (Final URL: /api/chat)")
 
     @app.get("/health")
     async def health_check():
@@ -46,10 +46,10 @@ try:
             "database_url": "SET" if settings.database_url else "NOT SET"
         }
 
-    print("✅ STARTUP: FastAPI App initialized successfully.")
+    print("[STARTUP] FastAPI App initialized successfully.")
 
 except Exception as e:
-    print(f"🔥 STARTUP ERROR in main.py: {str(e)}")
+    print(f"[STARTUP ERROR] in main.py: {str(e)}")
     import traceback
     traceback.print_exc()
     # Re-raise so Vercel logs show the crash

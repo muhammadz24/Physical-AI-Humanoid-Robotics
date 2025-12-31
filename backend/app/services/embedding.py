@@ -1,28 +1,29 @@
-from google import genai
+import google.generativeai as genai
 from backend.app.core.config import settings
 
 class EmbeddingService:
     def __init__(self):
-        # Initialize new Client
-        self.client = genai.Client(api_key=settings.gemini_api_key)
-        self.model_id = "text-embedding-004"
+        # Configure SDK with API key
+        genai.configure(api_key=settings.gemini_api_key)
+        self.model = "models/text-embedding-004"
 
     # Async definition for route compatibility, but SYNCHRONOUS execution for Vercel stability
     async def get_embedding(self, text: str) -> list[float]:
         try:
             text = text.replace("\n", " ")
 
-            # DIRECT SYNCHRONOUS CALL (New SDK Syntax)
-            result = self.client.models.embed_content(
-                model=self.model_id,
-                contents=text,
+            # Use synchronous SDK call (stable for Vercel)
+            result = genai.embed_content(
+                model=self.model,
+                content=text,
+                task_type="retrieval_document"
             )
 
-            # New SDK returns object, access embeddings list
-            return result.embeddings[0].values
+            # Return the embedding vector
+            return result['embedding']
 
         except Exception as e:
-            print(f"🔥 EMBEDDING NEW-SDK ERROR: {str(e)}")
+            print(f"[EMBEDDING ERROR] {str(e)}")
             raise e
 
 embedding_service = EmbeddingService()
