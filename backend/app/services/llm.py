@@ -1,49 +1,52 @@
 import os
-import google.generativeai as genai
+import httpx
+import json
 from backend.app.core.config import settings
 
 class LLMService:
     def __init__(self):
-        # 1. API Key Load Karo
-        api_key = settings.gemini_api_key
-        if not api_key:
-            api_key = os.getenv("GEMINI_API_KEY")
-        if not api_key:
-            api_key = os.getenv("GOOGLE_API_KEY")
-
-        if api_key:
-            print(f"DEBUG: API Key Found (Length: {len(api_key)})")
-        else:
-            print("CRITICAL ERROR: No API Key found!")
-
-        genai.configure(api_key=api_key)
-
-        # 2. DEBUG: Available Models ki List Print Karo (Taake pata chale asliyat kya hai)
-        print("----- CHECKING AVAILABLE GOOGLE MODELS -----")
-        try:
-            for m in genai.list_models():
-                if 'generateContent' in m.supported_generation_methods:
-                    print(f"AVAILABLE: {m.name}")
-        except Exception as e:
-            print(f"COULD NOT LIST MODELS: {e}")
-        print("--------------------------------------------")
-
-        # 3. FIX: Use 'gemini-pro' (Sabse Stable Model) instead of Flash
-        # Agar Flash nahi mil raha, to Pro zaroor milega.
-        self.model = genai.GenerativeModel("gemini-pro")
+        # Key uthao (Jahan se bhi mile)
+        self.api_key = settings.gemini_api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        
+        # Latest Stable Model
+        self.model_name = "gemini-1.5-flash"
 
     async def get_response(self, prompt: str, system_prompt: str = "You are a helpful AI.") -> str:
-        try:
-            full_prompt = f"{system_prompt}\n\nUser Question: {prompt}"
-            response = self.model.generate_content(full_prompt)
+        if not self.api_key:
+            return "CRITICAL ERROR: Google API Key is missing in Environment Variables."
 
-            if response and response.text:
-                return response.text
-            return "No response generated."
+        # DIRECT GOOGLE API URL (Bina kisi library ke)
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
+        
+        headers = {"Content-Type": "application/json"}
+        
+        # Simple JSON Payload
+        payload = {
+            "contents": [{
+                "parts": [{"text": f"{system_prompt}\n\nUser Question: {prompt}"}]
+            }]
+        }
 
-        except Exception as e:
-            error_msg = str(e)
-            print(f"[LLM RAW ERROR] {error_msg}")
-            return f"GOOGLE API ERROR: {error_msg}"
+        async with httpx.AsyncClient() as client:
+            try:
+                # Direct Post Request
+                response = await client.post(url, headers=headers, json=payload, timeout=30.0)
+                
+                # Agar Google ne Error diya (e.g. 400, 403, 404)
+                if response.status_code != 200:
+                     error_data = response.text
+                     print(f"[GOOGLE RAW ERROR] {error_data}")
+                     return f"GOOGLE API ERROR ({response.status_code}): {error_data}"
+                
+                # Agar Success hua to data nikalo
+                data = response.json()
+                try:
+                    return data["candidates"][0]["content"]["parts"][0]["text"]
+                except (KeyError, IndexError):
+                    return "Error: Empty response from Google."
+                
+            except Exception as e:
+                print(f"[CONNECTION ERROR] {str(e)}")
+                return f"CONNECTION ERROR: {str(e)}"
 
 llm_service = LLMService()
