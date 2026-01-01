@@ -1,6 +1,13 @@
 print("[STARTUP] Loading backend/main.py...")
 import os
 import sys
+
+# --- NEW ADDITION: FORCE LOAD .ENV ---
+# Ye 2 lines zaroori hain taake local PC par .env file read ho sakay
+from dotenv import load_dotenv
+load_dotenv()
+# -------------------------------------
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.api.routes import router as chat_router
@@ -34,7 +41,7 @@ try:
 
     # CORRECT ROUTING: Resource-level prefix ONLY
     # Vercel rewrite adds /api context → Final URL: /api/chat
-    app.include_router(chat_router, prefix="/chat", tags=["chat"])
+    app.include_router(chat_router, prefix="/api/chat", tags=["chat"])
     print("[STARTUP] Router registered: /chat (Final URL: /api/chat)")
 
     @app.get("/health")
@@ -54,3 +61,4 @@ except Exception as e:
     traceback.print_exc()
     # Re-raise so Vercel logs show the crash
     raise e
+    
