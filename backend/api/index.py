@@ -1,21 +1,31 @@
 import sys
 import os
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
-# Vercel environment mein root path set karna zaroori hai
-# Hum current file ki directory se 2 step peeche ja kar root add kar rahay hain
+# Vercel environment path setup
 current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.dirname(current_dir)
-sys.path.append(root_dir)
+project_root = os.path.dirname(current_dir)
+
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 try:
-    # Ab backend se app import karo
+    # Asli App import karne ki koshish
     from backend.main import app
-except ImportError as e:
-    # Agar import fail ho to error print karo (Logs mein dikhega)
-    print(f"Error importing backend: {e}")
-    # Temporary fallback taake server crash na ho (Debug only)
-    from fastapi import FastAPI
+except Exception as e:
+    # --- DEBUG MODE (Agar asli app fail ho jaye) ---
     app = FastAPI()
-    @app.get("/api/debug")
-    def debug():
-        return {"error": str(e), "path": sys.path}
+
+    # Ab yeh GET aur POST dono ko handle karega
+    @app.api_route("/{path_name:path}", methods=["GET", "POST", "PUT", "DELETE"])
+    async def catch_all(path_name: str, request: Request):
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "Backend Loading Failed",
+                "reason": str(e), # Yeh batayega ke asli wajah kya hai
+                "type": type(e).__name__,
+                "hint": "Check Vercel Logs. Likely missing Env Vars (DB/API Key) or missing requirements."
+            }
+        )
