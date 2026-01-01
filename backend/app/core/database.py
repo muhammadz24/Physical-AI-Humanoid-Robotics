@@ -8,6 +8,7 @@ Handles chat session logging and analytics.
 import asyncpg
 from typing import Optional
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from backend.app.core.config import settings
 
@@ -112,6 +113,80 @@ class DatabaseManager:
             print(f"Database health check failed: {e}")
             return False
 
+    async def init_db(self) -> None:
+        """
+        Initialize database schema by running migrations.
+
+        CRITICAL: This must be called on application startup to ensure
+        all required tables exist in Neon Postgres.
+
+        Runs migrations in order:
+        1. 001_create_users_table.sql - Creates users table with bonus fields
+        """
+        if self.pool is None:
+            print("[ERROR] Cannot initialize database: No connection pool")
+            return
+
+        print("[DB_INIT] Running database migrations...")
+
+        # Get migrations directory
+        migrations_dir = Path(__file__).parent.parent.parent / "migrations"
+
+        # Migration files in order
+        migration_files = [
+            "001_create_users_table.sql"
+        ]
+
+        try:
+            async with self.get_connection() as conn:
+                for migration_file in migration_files:
+                    migration_path = migrations_dir / migration_file
+
+                    if not migration_path.exists():
+                        print(f"[WARN] Migration file not found: {migration_file}")
+                        continue
+
+                    print(f"[DB_INIT] Executing migration: {migration_file}")
+
+                    # Read migration SQL
+                    with open(migration_path, "r", encoding="utf-8") as f:
+                        migration_sql = f.read()
+
+                    # Execute migration (idempotent - uses CREATE TABLE IF NOT EXISTS)
+                    await conn.execute(migration_sql)
+                    print(f"[OK] Migration completed: {migration_file}")
+
+                # Verify users table exists
+                table_exists = await conn.fetchval("""
+                    SELECT EXISTS (
+                        SELECT FROM information_schema.tables
+                        WHERE table_schema = 'public'
+                        AND table_name = 'users'
+                    );
+                """)
+
+                if table_exists:
+                    print("[OK] Database schema initialized successfully")
+                else:
+                    print("[ERROR] Users table not found after migration")
+
+        except Exception as e:
+            print(f"[ERROR] Database initialization failed: {e}")
+            import traceback
+            traceback.print_exc()
+            # Don't raise - allow app to start even if migrations fail
+            # This prevents cascading failures in Vercel
+
 
 # Global database manager instance
 db_manager = DatabaseManager()
+
+
+async def init_db():
+    """
+    Public function to initialize database.
+
+    Called from FastAPI lifespan context manager.
+    """
+    await db_manager.connect()
+    await db_manager.init_db()
