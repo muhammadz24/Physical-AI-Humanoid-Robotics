@@ -11,6 +11,7 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.api.routes import router as chat_router
+from backend.app.api.auth import router as auth_router
 from backend.app.core.config import settings
 
 try:
@@ -41,8 +42,11 @@ try:
 
     # CORRECT ROUTING: Resource-level prefix ONLY
     # Vercel rewrite adds /api context → Final URL: /api/chat
-    app.include_router(chat_router, prefix="/api/chat", tags=["chat"])
+    app.include_router(chat_router, prefix="/chat", tags=["chat"])
     print("[STARTUP] Router registered: /chat (Final URL: /api/chat)")
+
+    app.include_router(auth_router, prefix="/auth", tags=["auth"])
+    print("[STARTUP] Router registered: /auth (Final URL: /api/auth)")
 
     @app.get("/health")
     async def health_check():
