@@ -11,17 +11,12 @@
       "config": { "distDir": "build" }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.py"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
     }
-  ]
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
 }

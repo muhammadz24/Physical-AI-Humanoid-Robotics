@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-01-05T23:29:46.384896",
+  "checks": {
+    "database_connection": false,
+    "tables_exist": false,
+    "users_schema": false,
+    "jwt_generation": true,
+    "user_count": -1,
+    "chatlog_functionality": false,
+    "connection_pool": true
+  },
+  "health_score": 33,
+  "details": {
+    "db_connection": {
+      "status": "failed",
+      "error": "(psycopg2.OperationalError) connection to server at \"ep-orange-bonus-a4xy5zi4-pooler.us-east-1.aws.neon.tech\" (44.199.59.172), port 5432 failed: ERROR:  unsupported startup parameter in options: state"
+    },
+    "tables_error": "(psycopg2.OperationalError) connection to server at \"ep-orange-bonus-a4xy5zi4-pooler.us-east-1.aws.neon.tech\" (44.199.59.172), port 5432 failed: ERROR:  unsupported startup parameter in options: statement_timeout. Please use unpooled connection or remove this parameter from the startup package. More details: https://neon.tech/docs/connect/connection-errors#unsupported-startup-parameter\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "schema_error": "(psycopg2.OperationalError) connection to server at \"ep-orange-bonus-a4xy5zi4-pooler.us-east-1.aws.neon.tech\" (44.199.59.172), port 5432 failed: ERROR:  unsupported startup parameter in options: statement_timeout. Please use unpooled connection or remove this parameter from the startup package. More details: https://neon.tech/docs/connect/connection-errors#unsupported-startup-parameter\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "jwt_test": {
+      "status": "working",
+      "algorithm": "HS256",
+      "token_sample": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0Z"
+    },
+    "user_count_error": "(psycopg2.OperationalError) connection to server at \"ep-orange-bonus-a4xy5zi4-pooler.us-east-1.aws.neon.tech\" (44.199.59.172), port 5432 failed: ERROR:  unsupported startup parameter in options: statement_timeout. Please use unpooled connection or remove this parameter from the startup package. More details: https://neon.tech/docs/connect/connection-errors#unsupported-startup-parameter\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "chatlogs_error": "(psycopg2.OperationalError) connection to server at \"ep-orange-bonus-a4xy5zi4-pooler.us-east-1.aws.neon.tech\" (44.199.59.172), port 5432 failed: ERROR:  unsupported startup parameter in options: statement_timeout. Please use unpooled connection or remove this parameter from the startup package. More details: https://neon.tech/docs/connect/connection-errors#unsupported-startup-parameter\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "connection_pool": {
+      "status": "Pool size: 5  Connections in pool: 0 Current Overflow: -5 Current Checked out connections: 0",
+      "healthy": true
+    }
+  },
+  "overall_status": "[CRITICAL] Database Unreachable"
+}

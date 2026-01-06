@@ -1,0 +1,110 @@
+{
+  "theme.ErrorPageContent.title": {
+    "message": "صفحہ میں کچھ خرابی ہے",
+    "description": "The title of the error page"
+  },
+  "theme.ErrorPageContent.tryAgain": {
+    "message": "دوبارہ کوشش کریں",
+    "description": "The label of the button to try again"
+  },
+  "theme.NotFound.title": {
+    "message": "صفحہ نہیں ملا",
+    "description": "The title of the 404 page"
+  },
+  "theme.NotFound.p1": {
+    "message": "آپ جس صفحہ کو تلاش کر رہے تھے وہ ہمیں نہیں ملا۔",
+    "description": "The first paragraph of the 404 page"
+  },
+  "theme.NotFound.p2": {
+    "message": "براہ کرم اس ویب سائٹ کے منتظم سے رابطہ کریں جس کے ذریعے آپ یہاں پر آئے تھے۔",
+    "description": "The 2nd paragraph of the 404 page"
+  },
+  "theme.admonition.note": {
+    "message": "نوٹ",
+    "description": "The default label used for the Note admonition (:::note)"
+  },
+  "theme.admonition.tip": {
+    "message": "اہم نکتہ",
+    "description": "The default label used for the Tip admonition (:::tip)"
+  },
+  "theme.admonition.danger": {
+    "message": "خطرہ",
+    "description": "The default label used for the Danger admonition (:::danger)"
+  },
+  "theme.admonition.info": {
+    "message": "معلومات",
+    "description": "The default label used for the Info admonition (:::info)"
+  },
+  "theme.admonition.caution": {
+    "message": "احتیاط",
+    "description": "The default label used for the Caution admonition (:::caution)"
+  },
+  "theme.NavBar.navAriaLabel": {
+    "message": "Navigation bar",
+    "description": "The ARIA label for the main navigation"
+  },
+  "theme.blog.post.readingTime.plurals": {
+    "message": "ایک منٹ پڑھیں",
+    "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+  },
+  "theme.docs.breadcrumbs.home": {
+    "message": "ہوم",
+    "description": "The ARIA label for the home page in the breadcrumbs"
+  },
+  "theme.docs.sidebar.collapseButtonTitle": {
+    "message": "سائڈ بار کو بند کریں",
+    "description": "The title attribute for collapse button of doc sidebar"
+  },
+  "theme.docs.sidebar.collapseButtonAriaLabel": {
+    "message": "سائڈ بار کو بند کریں",
+    "description": "The title attribute for collapse button of doc sidebar"
+  },
+  "theme.docs.sidebar.navAriaLabel": {
+    "message": "Docs sidebar",
+    "description": "The ARIA label for the sidebar navigation"
+  },
+  "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
+    "message": "Close navigation bar",
+    "description": "The ARIA label for close button of mobile sidebar"
+  },
+  "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
+    "message": "← سائڈ بار پر واپس جائیں",
+    "description": "The label of the back button to return to main menu, when browsing a mobile sidebar secondary menu (like a version dropdown)"
+  },
+  "theme.navbar.mobileVersionsDropdown.label": {
+    "message": "ویژن منتخب کریں",
+    "description": "The label for the navbar versions dropdown on mobile view"
+  },
+  "theme.TOCCollapsible.toggleButtonLabel": {
+    "message": "اس صفحہ پر",
+    "description": "The ARIA label and title attribute for the button toggling the Table of Contents"
+  },
+  "theme.CodeBlock.copied": {
+    "message": "کاپی ہو گیا",
+    "description": "The copied button label on code blocks"
+  },
+  "theme.CodeBlock.copyButtonAriaLabel": {
+    "message": "کوڈ کو کلپ بورڈ پر کاپی کریں",
+    "description": "The ARIA label for copy code blocks button"
+  },
+  "theme.CodeBlock.copy": {
+    "message": "کاپی",
+    "description": "The copy button label on code blocks"
+  },
+  "theme.CodeBlock.wordWrapToggle": {
+    "message": "ورڈ ریپ ٹوگل کریں",
+    "description": "The title attribute for toggle word wrapping button of code block lines"
+  },
+  "theme.docs.sidebar.expandButtonTitle": {
+    "message": "سائڈ بار کو پھیلائیں",
+    "description": "The ARIA label and title attribute for expand button of doc sidebar"
+  },
+  "theme.docs.sidebar.expandButtonAriaLabel": {
+    "message": "سائڈ بار کو پھیلائیں",
+    "description": "The ARIA label and title attribute for expand button of doc sidebar"
+  },
+  "theme.tags.tagsPageTitle": {
+    "message": "ٹیگز",
+    "description": "The title of the tag list page"
+  }
+}

@@ -145,6 +145,7 @@ export default function AuthProvider({ children }) {
     isLoading,
     login,
     logout,
+    handleUnauthenticated: logout, // Function to call when receiving 401 responses
   };
 
   // CRITICAL: Don't render children until we've checked localStorage

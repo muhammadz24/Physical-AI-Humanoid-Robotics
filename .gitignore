@@ -75,3 +75,4 @@ coverage/
 
 .vercel
 .env*.local
+cookies.txt

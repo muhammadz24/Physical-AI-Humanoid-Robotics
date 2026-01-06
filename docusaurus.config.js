@@ -12,7 +12,7 @@ const config = {
   favicon: 'img/logo.svg',
 
   // Set the production url of your site here (Vercel deployment)
-  url: 'https://physical-ai-humanoid-robotics-mz24.vercel.app',
+  url: process.env.URL || 'https://physical-ai-humanoid-robotics-mz24.vercel.app',
   // Set the /<baseUrl>/ pathname under which your site is served
   // CRITICAL: Must be root '/' for Vercel clean URLs
   baseUrl: '/',
@@ -29,7 +29,14 @@ const config = {
   // Internationalization
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en', 'ur'],
+    localeConfigs: {
+      ur: {
+        label: 'اردو',
+        direction: 'rtl',
+        htmlLang: 'ur',
+      },
+    },
   },
 
   presets: [
@@ -69,6 +76,10 @@ const config = {
             sidebarId: 'tutorialSidebar',
             position: 'left',
             label: 'Textbook',
+          },
+          {
+            type: 'localeDropdown',
+            position: 'right',
           },
           {
             to: '/author',

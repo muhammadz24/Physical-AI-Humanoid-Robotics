@@ -1,0 +1,62 @@
+{
+  "theme.docs.paginator.navAriaLabel": {
+    "message": "دستاویزات کے صفحات",
+    "description": "The navigation label for the docs pagination"
+  },
+  "theme.docs.paginator.previous": {
+    "message": "پچھلا",
+    "description": "The label used for the previous pagination button in docs"
+  },
+  "theme.docs.paginator.next": {
+    "message": "اگلا",
+    "description": "The label used for the next pagination button in docs"
+  },
+  "theme.docs.sidebar.expandButtonTitle": {
+    "message": "سائڈ بار کو پھیلائیں",
+    "description": "The ARIA label and title attribute for expand button of doc sidebar"
+  },
+  "theme.docs.sidebar.expandButtonAriaLabel": {
+    "message": "سائڈ بار کو پھیلائیں",
+    "description": "The ARIA label and title attribute for expand button of doc sidebar"
+  },
+  "theme.docs.versions.unreleasedVersionLabel": {
+    "message": "یہ {siteTitle} {versionLabel} کے لئے غیر جاری کردہ دستاویزات ہیں۔",
+    "description": "The label used for the unreleased version suggestion"
+  },
+  "theme.docs.versions.unmaintainedVersionLabel": {
+    "message": "یہ {siteTitle} {versionLabel} کے لئے دستاویزات ہیں، جو جاری نہیں ہیں۔",
+    "description": "The label used for the unmaintained version suggestion"
+  },
+  "theme.docs.versions.latestVersionSuggestionLabel": {
+    "message": "{versionTag} تازہ ترین جاری ورژن ہے۔",
+    "description": "The label used to tell the user to check the latest version"
+  },
+  "theme.docs.versions.latestVersionLinkLabel": {
+    "message": "تازہ ترین دستاویزات دیکھیں",
+    "description": "The label used for the link to the latest version"
+  },
+  "theme.docs.tagDocListPageTitle.nDocsTagged": {
+    "message": "ایک دستاویز کے ساتھ ٹیگ کیا گیا|{count} دستاویزات کے ساتھ ٹیگ کیا گیا",
+    "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+  },
+  "theme.docs.tagDocListPageTitle": {
+    "message": "\"{tagName}\" کے ساتھ ٹیگ کردہ دستاویزات",
+    "description": "The title of the page for a docs tag"
+  },
+  "theme.docs.sidebar.collapseButtonTitle": {
+    "message": "سائڈ بار کو بند کریں",
+    "description": "The title attribute for collapse button of doc sidebar"
+  },
+  "theme.docs.sidebar.collapseButtonAriaLabel": {
+    "message": "سائ بار کو بند کریں",
+    "description": "The ARIA label for collapse button of doc sidebar"
+  },
+  "theme.docs.sidebar.navAriaLabel": {
+    "message": "دستاویزات سائڈ بار",
+    "description": "The ARIA label for the sidebar navigation"
+  },
+  "theme.docs.breadcrumbs.home": {
+    "message": "ہوم",
+    "description": "The ARIA label for the home page in the breadcrumbs"
+  }
+}

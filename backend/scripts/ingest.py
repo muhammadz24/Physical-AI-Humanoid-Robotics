@@ -29,8 +29,9 @@ if sys.platform == 'win32':
     sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
     sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add project root to path for imports (backend/scripts/ -> backend/ -> project_root/)
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 
 from backend.app.services.embedding import get_embedding
 from backend.app.services.parser import MarkdownParser

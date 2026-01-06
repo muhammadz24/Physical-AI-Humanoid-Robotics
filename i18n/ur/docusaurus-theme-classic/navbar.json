@@ -1,0 +1,38 @@
+{
+  "theme.navbar.mobileSidebarMenu": {
+    "message": "مینو",
+    "description": "The mobile sidebar menu label"
+  },
+  "theme.navbar.mobileVersionsDropdown.label": {
+    "message": "ویژن منتخب کریں",
+    "description": "The label for the navbar versions dropdown on mobile view"
+  },
+  "theme.docs.breadcrumbs.home": {
+    "message": "ہوم",
+    "description": "The ARIA label for the home page in the breadcrumbs"
+  },
+  "theme.docs.sidebar.collapseButtonTitle": {
+    "message": "سائڈ بار کو بند کریں",
+    "description": "The title attribute for collapse button of doc sidebar"
+  },
+  "theme.docs.sidebar.collapseButtonAriaLabel": {
+    "message": "سائڈ بار کو بند کریں",
+    "description": "The ARIA label for collapse button of doc sidebar"
+  },
+  "theme.docs.sidebar.navAriaLabel": {
+    "message": "دستاویزات سائڈ بار",
+    "description": "The ARIA label for the sidebar navigation"
+  },
+  "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
+    "message": "← سائڈ بار پر واپس جائیں",
+    "description": "The label of the back button to return to main menu, when browsing a mobile sidebar secondary menu (like a version dropdown)"
+  },
+  "theme.navbar.mobileLanguageDropdown.label": {
+    "message": "زبانیں",
+    "description": "The label for the mobile language switcher dropdown"
+  },
+  "theme.common.skipToMainContent": {
+    "message": "مین کنٹینٹ پر جائیں",
+    "description": "The skip to content link label"
+  }
+}

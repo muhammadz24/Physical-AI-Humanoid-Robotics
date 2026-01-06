@@ -73,43 +73,36 @@ try:
     app = FastAPI(
         title="Physical AI Chatbot",
         version="1.0.0",
-        docs_url="/api/docs",
-        openapi_url="/api/openapi.json",
+        docs_url="/api/docs",  # Explicit /api prefix
+        openapi_url="/api/openapi.json",  # Explicit /api prefix
         redirect_slashes=False,  # CRITICAL for Vercel
         lifespan=lifespan  # Bind lifecycle manager
     )
 
-    # CORS Setup (Clean URLs)
-    origins = [
-        "http://localhost:3000",
-        "https://physical-ai-humanoid-robotics.vercel.app",
-        "https://physical-ai-humanoid-robotics-mz24.vercel.app",
-        "*"  # Allow all for debugging
-    ]
-
+    # CORS Setup (Production Ready - Uses Environment Variables)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=settings.cors_origins_list,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
     # ========================================================================
-    # ROUTING ARCHITECTURE (CRITICAL - Prevents Double Prefix 404s)
+    # ROUTING ARCHITECTURE (Resource Prefix Pattern - Vercel Serverless)
     # ========================================================================
     # LOGIC:
-    # - Vercel rewrites /api/(.*) to /api/index.py (serverless function)
-    # - FastAPI routers use RESOURCE-LEVEL prefix ONLY (e.g., /chat, /auth)
-    # - NO /api prefix in router definitions
-    # - Final URLs: /api/chat, /api/auth/signup, etc.
+    # - Routers define resource-level prefix ONLY (e.g., /chat, /auth)
+    # - Vercel rewrite adds /api context at serverless function level
+    # - Final URLs: /api/chat, /api/auth, /api/health (via vercel.json rewrite)
+    # - This prevents double-prefix issues (no /api/api/chat)
     # ========================================================================
 
     app.include_router(chat_router, prefix="/chat", tags=["chat"])
-    print("[STARTUP] Router registered: /chat (Final URL: /api/chat)")
+    print("[STARTUP] Router registered: /chat")
 
     app.include_router(auth_router, prefix="/auth", tags=["auth"])
-    print("[STARTUP] Router registered: /auth (Final URL: /api/auth)")
+    print("[STARTUP] Router registered: /auth")
 
     @app.get("/health")
     async def health_check():
@@ -130,6 +123,15 @@ try:
             "database_url": "SET" if settings.database_url else "NOT SET",
             "database_connected": db_manager.pool is not None
         }
+
+    @app.get("/")  # Root endpoint for serverless function health check
+    async def root():
+        """
+        Root endpoint for Vercel serverless function.
+
+        NOTE: This will be accessible at /api/ when routed through vercel.json
+        """
+        return {"message": "Physical AI & Humanoid Robotics Backend API", "status": "healthy"}
 
     print("[STARTUP] FastAPI App initialized successfully.")
 

@@ -1,0 +1,25 @@
+{
+  "timestamp": "1767567263.0202417",
+  "qdrant_url": "https://392dbde0-ca94-4a84-9e5...",
+  "collection_name": "textbook",
+  "results": {
+    "collection_exists": true,
+    "density_error": "'CollectionInfo' object has no attribute 'vectors_count'",
+    "dimension_check": {
+      "expected_dimension": 384,
+      "actual_dimension": 768,
+      "match": false,
+      "distance_metric": "Cosine"
+    },
+    "quality_sample": {
+      "sample_size": 10,
+      "unique_chapters": 1,
+      "chapter_list": [
+        "01"
+      ],
+      "chunk_types": [],
+      "has_metadata": true
+    }
+  },
+  "overall_status": "[WARNING] Insufficient Data - Run Ingestion"
+}

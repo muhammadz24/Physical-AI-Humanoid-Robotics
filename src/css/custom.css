@@ -566,6 +566,100 @@ html {
 }
 
 /* ============================================
+   URDU TYPOGRAPHY & RTL SUPPORT
+   ============================================ */
+
+/* Import Urdu font */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap');
+
+/* Urdu font family definition */
+html[lang="ur"],
+html[dir="rtl"] {
+  --ifm-font-family-urdu: 'Noto Nastaliq Urdu', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+}
+
+/* Urdu content styling */
+html[lang="ur"] body,
+[lang="ur"] {
+  font-family: var(--ifm-font-family-urdu) !important;
+  line-height: 2.0 !important; /* Increased line-height for better Urdu readability */
+}
+
+/* RTL layout for Urdu language */
+html[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] .navbar__inner,
+html[dir="rtl"] .navbar__items,
+html[dir="rtl"] .navbar__items--right,
+html[dir="rtl"] .navbar__items--left {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .navbar__item {
+  margin-right: var(--ifm-navbar-item-padding-horizontal);
+  margin-left: 0;
+}
+
+html[dir="rtl"] .menu__list-item {
+  text-align: right;
+}
+
+html[dir="rtl"] .menu__link {
+  border-radius: 6px 0 0 6px;
+}
+
+html[dir="rtl"] .theme-doc-sidebar-item-category-level-1 > .menu__list-item {
+  padding-right: 0;
+  padding-left: 1.5rem;
+}
+
+html[dir="rtl"] .pagination-nav__link {
+  text-align: right;
+}
+
+html[dir="rtl"] .pagination-nav__label {
+  text-align: right;
+}
+
+html[dir="rtl"] .footer__links {
+  text-align: right;
+}
+
+html[dir="rtl"] .footer__item {
+  text-align: right;
+}
+
+html[dir="rtl"] .table-of-contents {
+  text-align: right;
+}
+
+/* Urdu-specific spacing adjustments */
+html[dir="rtl"] p,
+html[dir="rtl"] div,
+html[dir="rtl"] span,
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] h4,
+html[dir="rtl"] h5,
+html[dir="rtl"] h6 {
+  text-align: right;
+  direction: rtl;
+}
+
+/* Adjust margins and padding for RTL content */
+html[dir="rtl"] .container {
+  text-align: right;
+}
+
+html[dir="rtl"] .markdown {
+  text-align: right;
+}
+
+/* ============================================
    UI/UX FIXES (Feature Request)
    ============================================ */
 

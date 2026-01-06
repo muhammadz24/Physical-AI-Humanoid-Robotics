@@ -3,21 +3,23 @@
  *
  * Conditionally renders authentication UI based on user state:
  * - Guest: "Login" | "Signup" buttons
- * - Authenticated: "Logout" button (with optional user avatar)
+ * - Authenticated: "User Name" | "Personalize" | "Logout" buttons
  *
  * Integrates with AuthProvider context for auth state management.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from '@docusaurus/Link';
 import { useHistory } from '@docusaurus/router';
 import { useAuth } from '@site/src/components/AuthProvider';
 import { apiRequest, API_ENDPOINTS } from '@site/src/utils/api';
+import PersonalizationModal from '@site/src/components/PersonalizationModal';
 import styles from './AuthButtons.module.css';
 
 export default function AuthButtons() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, handleUnauthenticated } = useAuth();
   const history = useHistory();
+  const [showPersonalizeModal, setShowPersonalizeModal] = useState(false);
 
   /**
    * Handle logout - clear auth state and redirect to home.
@@ -60,24 +62,39 @@ export default function AuthButtons() {
     );
   }
 
-  // Authenticated user - show User Name (clickable link to profile) + Logout button
+  // Authenticated user - show User Name + Personalize + Logout
   return (
-    <div className={styles.authButtons}>
-      {user && (
-        <Link
-          to="/profile"
-          className={styles.userNameLink}
-          title="View Profile"
+    <>
+      <div className={styles.authButtons}>
+        {user && (
+          <Link
+            to="/profile"
+            className={styles.userNameLink}
+            title="View Profile"
+          >
+            {user.name}
+          </Link>
+        )}
+        <button
+          onClick={() => setShowPersonalizeModal(true)}
+          className={styles.personalizeButton}
+          title="Personalize chatbot responses"
         >
-          {user.name}
-        </Link>
-      )}
-      <button
-        onClick={handleLogout}
-        className={styles.logoutButton}
-      >
-        Logout
-      </button>
-    </div>
+          ✨ Personalize
+        </button>
+        <button
+          onClick={handleLogout}
+          className={styles.logoutButton}
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* Personalization Modal */}
+      <PersonalizationModal
+        isOpen={showPersonalizeModal}
+        onClose={() => setShowPersonalizeModal(false)}
+      />
+    </>
   );
 }

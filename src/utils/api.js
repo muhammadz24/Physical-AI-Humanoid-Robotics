@@ -93,6 +93,7 @@ export const DEFAULT_FETCH_OPTIONS = {
  *
  * @param {string} endpoint - API endpoint path (e.g., '/api/auth/signup')
  * @param {object} options - Fetch options (method, body, etc.)
+ * @param {Function} onUnauthenticated - Optional callback for 401 responses
  * @returns {Promise<Response>} Fetch response
  *
  * @example
@@ -101,7 +102,7 @@ export const DEFAULT_FETCH_OPTIONS = {
  *   body: JSON.stringify({ email, password })
  * });
  */
-export async function apiRequest(endpoint, options = {}) {
+export async function apiRequest(endpoint, options = {}, onUnauthenticated = null) {
   const url = `${API_BASE_URL}${endpoint}`;
 
   // Log the actual URL being called for debugging
@@ -116,5 +117,30 @@ export async function apiRequest(endpoint, options = {}) {
     },
   };
 
-  return fetch(url, config);
+  const response = await fetch(url, config);
+
+  // Handle 401 Unauthorized responses gracefully
+  if (response.status === 401) {
+    console.warn(`[API Utils] 401 Unauthorized for endpoint: ${endpoint}`);
+
+    // Call the unauthenticated callback if provided
+    if (onUnauthenticated && typeof onUnauthenticated === 'function') {
+      onUnauthenticated();
+    }
+  }
+
+  return response;
+}
+
+/**
+ * Context-aware API request function that automatically handles 401 responses
+ * by calling the provided logout function.
+ *
+ * @param {Function} logoutFn - Function to call when receiving 401 response
+ * @returns {Function} API request function with automatic 401 handling
+ */
+export function createApiRequestWithAuth(logoutFn) {
+  return async function(endpoint, options = {}) {
+    return apiRequest(endpoint, options, logoutFn);
+  };
 }

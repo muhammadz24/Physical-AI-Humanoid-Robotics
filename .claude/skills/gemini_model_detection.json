@@ -1,0 +1,28 @@
+{
+  "best_model": "gemini-flash-latest",
+  "latency_ms": 907,
+  "all_tested": {
+    "gemini-flash-lite-latest": {
+      "model": "gemini-flash-lite-latest",
+      "status": "working",
+      "latency_ms": 1126,
+      "error": null,
+      "response_sample": "OK"
+    },
+    "gemini-flash-latest": {
+      "model": "gemini-flash-latest",
+      "status": "working",
+      "latency_ms": 907,
+      "error": null,
+      "response_sample": "OK"
+    },
+    "gemini-3-flash-preview": {
+      "model": "gemini-3-flash-preview",
+      "status": "working",
+      "latency_ms": 2440,
+      "error": null,
+      "response_sample": "OK"
+    }
+  },
+  "timestamp": "1767567315.238096"
+}

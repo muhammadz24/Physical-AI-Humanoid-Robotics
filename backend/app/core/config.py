@@ -1,7 +1,18 @@
 import os
+from pathlib import Path
 from typing import List, Union, Optional
 from pydantic import AnyHttpUrl, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from dotenv import load_dotenv
+
+# CRITICAL: Force-load backend/.env before initializing settings
+_backend_dir = Path(__file__).parent.parent.parent  # Navigate to backend/
+_env_path = _backend_dir / ".env"
+if _env_path.exists():
+    load_dotenv(_env_path, override=True)
+    print(f"[CONFIG] Loaded environment from: {_env_path}")
+else:
+    print(f"[CONFIG WARNING] .env not found at: {_env_path}")
 
 class Settings(BaseSettings):
     # 1. CORE API SETTINGS
@@ -27,8 +38,8 @@ class Settings(BaseSettings):
     # 4. AI MODELS (Google Gemini)
     GOOGLE_API_KEY: Optional[str] = os.getenv("GOOGLE_API_KEY")
     GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
-    # Force stable model ID to avoid 404
-    GEMINI_MODEL: str = "gemini-1.5-flash-001"
+    # Auto-detected best model (via .claude/skills/gemini_model_autodetect.py)
+    GEMINI_MODEL: str = "gemini-flash-latest"
 
     EMBEDDING_MODEL: str = "models/text-embedding-004"
     EMBEDDING_DIMENSION: int = 768

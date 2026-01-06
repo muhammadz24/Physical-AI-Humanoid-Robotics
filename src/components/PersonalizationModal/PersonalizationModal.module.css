@@ -1,0 +1,245 @@
+/**
+ * PersonalizationModal Styles
+ *
+ * Mobile-first design with responsive button grids.
+ * Follows Docusaurus theme variables for dark/light mode support.
+ */
+
+/* Backdrop */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Modal Container */
+.modalContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--ifm-background-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Header */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--ifm-heading-color);
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--ifm-color-emphasis-600);
+  transition: color 0.2s;
+}
+
+.closeButton:hover:not(:disabled) {
+  color: var(--ifm-color-emphasis-900);
+}
+
+.closeButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Body */
+.modalBody {
+  padding: 1.5rem;
+}
+
+.description {
+  margin: 0 0 2rem 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.95rem;
+}
+
+/* Question Groups */
+.questionGroup {
+  margin-bottom: 2rem;
+}
+
+.questionLabel {
+  display: block;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+  color: var(--ifm-heading-color);
+}
+
+/* Option Grid - Mobile First */
+.optionGrid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr; /* 1 column on mobile */
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 640px) {
+  .optionGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop: 3 columns for software (3 options), 2 for hardware (4 options) */
+@media (min-width: 768px) {
+  .questionGroup:first-of-type .optionGrid {
+    grid-template-columns: repeat(3, 1fr); /* Software: 3 options */
+  }
+
+  .questionGroup:last-of-type .optionGrid {
+    grid-template-columns: repeat(2, 1fr); /* Hardware: 4 options (2x2 grid) */
+  }
+}
+
+/* Option Buttons */
+.optionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border: 2px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  background-color: var(--ifm-background-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  min-height: 80px;
+}
+
+.optionButton:hover:not(:disabled) {
+  border-color: var(--ifm-color-primary);
+  background-color: var(--ifm-color-primary-lightest);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.optionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.optionButton.selected {
+  border-color: var(--ifm-color-primary);
+  background-color: var(--ifm-color-primary-lightest);
+  box-shadow: 0 0 0 3px var(--ifm-color-primary-light);
+}
+
+.optionTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ifm-heading-color);
+  margin-bottom: 0.25rem;
+}
+
+.optionDesc {
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-600);
+}
+
+/* Error Message */
+.errorMessage {
+  padding: 0.75rem 1rem;
+  background-color: var(--ifm-color-danger-lightest);
+  border-left: 4px solid var(--ifm-color-danger);
+  border-radius: 4px;
+  color: var(--ifm-color-danger-darkest);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Footer */
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.cancelButton,
+.submitButton {
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.cancelButton {
+  background-color: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-800);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background-color: var(--ifm-color-emphasis-300);
+}
+
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitButton {
+  background-color: var(--ifm-color-primary);
+  color: white;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--ifm-color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
