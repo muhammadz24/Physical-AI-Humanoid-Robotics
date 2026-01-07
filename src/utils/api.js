@@ -13,18 +13,27 @@
  */
 
 /**
- * Detect if running on localhost
- * - window.location.hostname === 'localhost' (dev server)
- * - window.location.hostname === '127.0.0.1' (alternative localhost)
+ * Helper function to detect if running on localhost
+ * - Uses window.location.hostname === 'localhost' (dev server)
+ * - Uses window.location.hostname === '127.0.0.1' (alternative localhost)
  *
- * CRITICAL: This detection ignores ENV vars entirely in production to bypass
- * trailing slash bugs and ensure relative paths work correctly.
+ * CRITICAL: This detection is SSR-safe by checking typeof window first.
+ * Returns false on the server (SSR) and proper value on the client.
  */
-const isLocalhost = typeof window !== 'undefined' &&
-  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+function getIsLocalhost() {
+  if (typeof window === 'undefined') {
+    // Server-side rendering: always return false
+    return false;
+  }
+  return (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1'
+  );
+}
 
 /**
  * Base URL for backend API.
+ * Uses a getter function to be SSR-safe.
  *
  * Environment-driven configuration:
  * - Local Development: http://localhost:8000 (hardcoded for dev)
@@ -33,7 +42,19 @@ const isLocalhost = typeof window !== 'undefined' &&
  * IMPORTANT: In production, we FORCE relative paths by returning empty string.
  * This bypasses ENV var issues (trailing slashes, wrong domains, etc.)
  */
-export const API_BASE_URL = isLocalhost ? 'http://localhost:8000' : '';
+function getApiBaseUrl() {
+  return getIsLocalhost() ? 'http://localhost:8000' : '';
+}
+
+/**
+ * API prefix for endpoints.
+ * Uses a getter function to be SSR-safe.
+ * In local development, the /api prefix is handled by the backend directly,
+ * while in production it's handled by Vercel rewrites.
+ */
+function getApiPrefix() {
+  return getIsLocalhost() ? '' : '/api';
+}
 
 /**
  * Log API configuration for debugging
@@ -42,41 +63,60 @@ export const API_BASE_URL = isLocalhost ? 'http://localhost:8000' : '';
  * This helps diagnose "zombie localhost" issues where production
  * incorrectly tries to hit localhost:8000
  */
-if (typeof console !== 'undefined') {
+if (typeof window !== 'undefined' && typeof console !== 'undefined') {
+  // Only log if we're in the browser
+  const hostname = window.location.hostname;
   console.log('[API Utils] ====== API CONFIGURATION ======');
-  console.log(`[API Utils] Environment: ${isLocalhost ? 'LOCALHOST' : 'PRODUCTION'}`);
-  console.log(`[API Utils] Hostname: ${typeof window !== 'undefined' ? window.location.hostname : 'N/A'}`);
-  console.log(`[API Utils] API Base URL: ${API_BASE_URL || '(relative URLs)'}`);
-  console.log(`[API Utils] Example Full URL: ${API_BASE_URL}${API_PREFIX}/chat`);
+  console.log(`[API Utils] Environment: ${getIsLocalhost() ? 'LOCALHOST' : 'PRODUCTION'}`);
+  console.log(`[API Utils] Hostname: ${hostname}`);
+  console.log(`[API Utils] API Base URL: ${getApiBaseUrl() || '(relative URLs)'}`);
+  console.log(`[API Utils] Example Full URL: ${getApiBaseUrl()}${getApiPrefix()}/chat`);
   console.log('[API Utils] ================================');
 }
 
 /**
+ * SSR-safe API_BASE_URL export
+ * Uses conditional check to avoid window access during SSR
+ */
+export const API_BASE_URL = typeof window !== 'undefined' ? getApiBaseUrl() : '';
+
+/**
  * API endpoint paths.
- *
- * Centralized endpoint definitions for type safety and maintainability.
+ * These are defined as static strings that get calculated at runtime
+ * to be SSR-safe. The values will be determined when accessed in the browser.
  * In local development, the /api prefix is handled by the backend directly,
  * while in production it's handled by Vercel rewrites.
  */
-const API_PREFIX = isLocalhost ? '' : '/api';
+const getAuthEndpoints = () => ({
+  SIGNUP: `${getApiPrefix()}/auth/signup`,
+  SIGNIN: `${getApiPrefix()}/auth/signin`,
+  SIGNOUT: `${getApiPrefix()}/auth/signout`,
+  ME: `${getApiPrefix()}/auth/me`,
+  UPDATE: `${getApiPrefix()}/auth/update`,
+  DELETE_ACCOUNT: `${getApiPrefix()}/auth/account`,
+});
 
+const getChatEndpoints = () => ({
+  SEND_MESSAGE: `${getApiPrefix()}/chat`,
+  HISTORY: `${getApiPrefix()}/chat/history`, // GET endpoint for fetching chat history
+  DELETE_HISTORY: `${getApiPrefix()}/chat/history`, // DELETE endpoint for clearing history
+  DELETE_MESSAGE: (messageId) => `${getApiPrefix()}/chat/${messageId}`,
+});
+
+const getPersonalizeEndpoints = () => ({
+  PERSONALIZE_CHAPTER: `${getApiPrefix()}/personalize`,
+});
+
+// Export endpoints as functions that return the correct values when called
 export const API_ENDPOINTS = {
-  AUTH: {
-    SIGNUP: `${API_PREFIX}/auth/signup`,
-    SIGNIN: `${API_PREFIX}/auth/signin`,
-    SIGNOUT: `${API_PREFIX}/auth/signout`,
-    ME: `${API_PREFIX}/auth/me`,
-    UPDATE: `${API_PREFIX}/auth/update`,
-    DELETE_ACCOUNT: `${API_PREFIX}/auth/account`,
+  get AUTH() {
+    return getAuthEndpoints();
   },
-  CHAT: {
-    SEND_MESSAGE: `${API_PREFIX}/chat`,
-    HISTORY: `${API_PREFIX}/chat/history`, // GET endpoint for fetching chat history
-    DELETE_HISTORY: `${API_PREFIX}/chat/history`, // DELETE endpoint for clearing history
-    DELETE_MESSAGE: (messageId) => `${API_PREFIX}/chat/${messageId}`,
+  get CHAT() {
+    return getChatEndpoints();
   },
-  PERSONALIZE: {
-    PERSONALIZE_CHAPTER: `${API_PREFIX}/personalize`,
+  get PERSONALIZE() {
+    return getPersonalizeEndpoints();
   },
 };
 
