@@ -21,7 +21,7 @@ class Settings(BaseSettings):
 
     # 2. CORS ORIGINS (Auto-parsed)
     # Default allows localhost and Vercel deployments
-    ALLOWED_ORIGINS: str = "http://localhost:3000,https://physical-ai-humanoid-robotics.vercel.app,*"
+    ALLOWED_ORIGINS: str = "http://localhost:3000,https://localhost:3000,http://127.0.0.1:3000,https://127.0.0.1:3000,https://physical-ai-humanoid-robotics.vercel.app,*"
 
     @property
     def cors_origins_list(self) -> List[str]:
