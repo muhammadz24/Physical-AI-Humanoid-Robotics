@@ -35,6 +35,7 @@ const config = {
         label: 'اردو',
         direction: 'rtl',
         htmlLang: 'ur',
+        path: 'ur', // Explicit path to prevent URL loops
       },
     },
   },
