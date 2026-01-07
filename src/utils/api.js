@@ -47,7 +47,7 @@ if (typeof console !== 'undefined') {
   console.log(`[API Utils] Environment: ${isLocalhost ? 'LOCALHOST' : 'PRODUCTION'}`);
   console.log(`[API Utils] Hostname: ${typeof window !== 'undefined' ? window.location.hostname : 'N/A'}`);
   console.log(`[API Utils] API Base URL: ${API_BASE_URL || '(relative URLs)'}`);
-  console.log(`[API Utils] Example Full URL: ${API_BASE_URL}/api/chat`);
+  console.log(`[API Utils] Example Full URL: ${API_BASE_URL}${API_PREFIX}/chat`);
   console.log('[API Utils] ================================');
 }
 
@@ -55,24 +55,28 @@ if (typeof console !== 'undefined') {
  * API endpoint paths.
  *
  * Centralized endpoint definitions for type safety and maintainability.
+ * In local development, the /api prefix is handled by the backend directly,
+ * while in production it's handled by Vercel rewrites.
  */
+const API_PREFIX = isLocalhost ? '' : '/api';
+
 export const API_ENDPOINTS = {
   AUTH: {
-    SIGNUP: '/api/auth/signup',
-    SIGNIN: '/api/auth/signin',
-    SIGNOUT: '/api/auth/signout',
-    ME: '/api/auth/me',
-    UPDATE: '/api/auth/update',
-    DELETE_ACCOUNT: '/api/auth/account',
+    SIGNUP: `${API_PREFIX}/auth/signup`,
+    SIGNIN: `${API_PREFIX}/auth/signin`,
+    SIGNOUT: `${API_PREFIX}/auth/signout`,
+    ME: `${API_PREFIX}/auth/me`,
+    UPDATE: `${API_PREFIX}/auth/update`,
+    DELETE_ACCOUNT: `${API_PREFIX}/auth/account`,
   },
   CHAT: {
-    SEND_MESSAGE: '/api/chat',
-    HISTORY: '/api/chat/history', // GET endpoint for fetching chat history
-    DELETE_HISTORY: '/api/chat/history', // DELETE endpoint for clearing history
-    DELETE_MESSAGE: (messageId) => `/api/chat/${messageId}`,
+    SEND_MESSAGE: `${API_PREFIX}/chat`,
+    HISTORY: `${API_PREFIX}/chat/history`, // GET endpoint for fetching chat history
+    DELETE_HISTORY: `${API_PREFIX}/chat/history`, // DELETE endpoint for clearing history
+    DELETE_MESSAGE: (messageId) => `${API_PREFIX}/chat/${messageId}`,
   },
   PERSONALIZE: {
-    PERSONALIZE_CHAPTER: '/api/personalize',
+    PERSONALIZE_CHAPTER: `${API_PREFIX}/personalize`,
   },
 };
 
